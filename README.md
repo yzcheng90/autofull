@@ -1,5 +1,7 @@
 # zhjg-common-autofull
- 自动填充属性框架
+自动填充属性框架
+
+基于 springboot 和 mybatis plus
 
 
 
@@ -25,18 +27,18 @@
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SysUser extends Model<SysUser> {
-	
-	/**
-	 * 用户ID
-	 */
-	@TableId(value = "user_id", type = IdType.AUTO)
-	private Long userId;
-	
-    ..........
 
-	@TableField(exist = false)
-     @AutoFullListSQL(sql = " select * from sys_role where create_user_id = {userId}")
-	private List<SysRole> roleIdList;
+  /**
+	* 用户ID
+  */
+  @TableId(value = "user_id", type = IdType.AUTO)
+  private Long userId;
+
+  ..........
+
+  @TableField(exist = false)
+  @AutoFullListSQL(sql = " select * from sys_role where create_user_id = {userId}")
+  private List<SysRole> roleIdList;
 }
 ```
 
