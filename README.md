@@ -5,11 +5,13 @@
 
 ### 使用方法：
 
-> 1、pom中的 parent 改成自己项目
+> 1、下载项目然后作为一个module添加到自己项目中
 >
-> 2、在bean中的字段上加上对应注解
+> 2、pom中的 parent 改成自己项目
 >
-> 3、最后使用 AutoFullHandler.full(obj);
+> 3、在bean中的字段上加上对应注解
+>
+> 4、最后使用 AutoFullHandler.full(obj);
 
 ### 示例代码：
 
@@ -33,7 +35,7 @@ public class SysUser extends Model<SysUser> {
     ..........
 
 	@TableField(exist = false)
-    @AutoFullListSQL(sql = " select * from sys_role where create_user_id = {userId}")
+     @AutoFullListSQL(sql = " select * from sys_role where create_user_id = {userId}")
 	private List<SysRole> roleIdList;
 }
 ```
