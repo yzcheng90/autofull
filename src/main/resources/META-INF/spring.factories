@@ -1,11 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.suke.zhjg.common.autofull.config.ApplicationContextRegister,\
-  com.suke.zhjg.common.autofull.config.AutoConfig,\
-  com.suke.zhjg.common.autofull.handler.AutoFullOssURLService,\
-  com.suke.zhjg.common.autofull.handler.AutoFullJoinService,\
-  com.suke.zhjg.common.autofull.handler.AutoFullFieldSQLService,\
-  com.suke.zhjg.common.autofull.handler.AutoFullFieldService,\
-  com.suke.zhjg.common.autofull.handler.AutoFullBeanService,\
-  com.suke.zhjg.common.autofull.handler.AutoFullBeanSQLService,\
-  com.suke.zhjg.common.autofull.handler.AutoFullListService,\
-  com.suke.zhjg.common.autofull.handler.AutoFullListSQLService
+  com.suke.zhjg.common.autofull.AutoFullConfiguration

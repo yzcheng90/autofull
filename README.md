@@ -8,7 +8,7 @@
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
   <artifactId>autofull-spring-boot-starter</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 
@@ -22,6 +22,23 @@
 > 3、在bean中的字段上加上对应注解
 >
 > 4、最后使用 AutoFullHandler.full(obj);
+
+
+### 功能
+> v1.0.0
+- @AutoFullBean  自动填充Bean
+- @AutoFullBeanSQL  自动填充Bean自定义SQL
+- @AutoFullField  自动填充字段
+- @AutoFullFieldSQL  自动填充字段自定义SQL
+- @AutoFullList  自动填充List
+- @AutoFullListSQL  自动填充List自定义SQL
+- @AutoFullJoin  多字段拼接
+- @AutoFullOssUrl  自动拼接OSS预览地址
+
+> v1.1.0
+- @AutoFullMask 数据脱敏 支持手机号和身份证 比如：138****8888
+
+
 
 ### 示例代码：
 
