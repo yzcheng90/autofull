@@ -3,6 +3,13 @@
 
 基于 springboot 和 mybatis plus
 
+```java
+<dependency>
+  <groupId>com.github.yzcheng90</groupId>
+  <artifactId>autofull-spring-boot-starter</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 
 ### 使用方法：
