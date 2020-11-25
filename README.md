@@ -3,6 +3,7 @@
 
 基于 springboot 和 mybatis plus
 
+### 使用方法1：
 ```java
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
@@ -12,7 +13,7 @@
 ```
 
 
-### 使用方法：
+### 使用方法2：
 
 > 1、下载项目然后作为一个module添加到自己项目中
 >
