@@ -8,7 +8,7 @@
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
   <artifactId>autofull-spring-boot-starter</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 
