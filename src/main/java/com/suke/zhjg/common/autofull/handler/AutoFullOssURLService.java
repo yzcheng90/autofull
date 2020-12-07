@@ -3,6 +3,7 @@ package com.suke.zhjg.common.autofull.handler;
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullOssUrl;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.entity.OssEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,13 @@ import java.lang.reflect.Field;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullOssUrl.class)
-public class AutoFullOssURLService implements Handler{
+public class AutoFullOssURLService implements Handler {
 
     @Autowired
     public OssEntity ossEntity;
+
+    @Autowired
+    public ConfigProperties configProperties;
 
     @Override
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
@@ -37,7 +41,7 @@ public class AutoFullOssURLService implements Handler{
     }
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj,int level) {
         try {
             if(annotation instanceof AutoFullOssUrl){
                 field.setAccessible(true);
@@ -51,7 +55,9 @@ public class AutoFullOssURLService implements Handler{
                     }else {
                         if(previewUrl != null && bucketName != null){
                             String url = previewUrl + "/" + bucketName + "/" + data;
-                            log.info("填充地址：{}",url);
+                            if(configProperties.isShowLog()){
+                                log.info("LEVEL:{}, 填充地址:{}",configProperties.getMaxLevel(),url);
+                            }
                             field.set(obj,url);
                         }
                     }

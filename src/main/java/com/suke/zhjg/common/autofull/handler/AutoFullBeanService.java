@@ -4,10 +4,11 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullBean;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.constant.ConstantSQL;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
-import com.suke.zhjg.common.autofull.util.Map2BeanUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -26,12 +27,17 @@ import java.util.Map;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullBean.class)
-public class AutoFullBeanService implements Handler{
+public class AutoFullBeanService implements Handler {
+
+    @Autowired
+    public ConfigProperties configProperties;
 
     @Override
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
         String sql = ConstantSQL.SQL.SELECT + " * "+ ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ?";
-        log.info("SQL:{}",sql);
+        if(configProperties.isShowLog()){
+            log.info("LEVEL:{}, SQL:{}",configProperties.getMaxLevel(),sql);
+        }
         return sql;
     }
 
@@ -41,7 +47,7 @@ public class AutoFullBeanService implements Handler{
     }
 
     @Override
-    public void result(Annotation annotation , Field[] fields, Field field, Object obj) {
+    public void result(Annotation annotation , Field[] fields, Field field, Object obj,int level) {
         try {
             if(annotation instanceof AutoFullBean){
                 AutoFullBean fieldAnnotation = field.getAnnotation(AutoFullBean.class);
@@ -54,18 +60,17 @@ public class AutoFullBeanService implements Handler{
                     String sql = this.sql(table,null, alias, tableField,null);
                     Map<Integer,Object> paramMap = new HashMap<>();
                     paramMap.put(1,param);
-                    List<Map<String, Object>> result = AutoFullSqlExecutor.executeQuery(sql, paramMap);
+                    List<?> result = AutoFullSqlExecutor.executeQuery(sql, getBeanClassType(field),paramMap,level);
                     if(CollUtil.isNotEmpty(result)){
-                        Map<String, Object> map = result.get(0);
-                        Class<?> forName = Class.forName(field.getType().getName());
-                        Object object = forName.newInstance();
-                        Object value = Map2BeanUtil.convert(map, object);
-                        field.set(obj,value);
+                        if(level < configProperties.getMaxLevel() && fieldAnnotation.childLevel()){
+                            level += 1;
+                            AutoFullHandler.full(result,level);
+                        }
+                        field.set(obj,result.get(0));
                     }
                 }
             }
-
-        }catch (IllegalAccessException | ClassNotFoundException | InstantiationException e){
+        }catch (IllegalAccessException e){
             log.error("填充Bean失败:{}",e);
             e.printStackTrace();
         }

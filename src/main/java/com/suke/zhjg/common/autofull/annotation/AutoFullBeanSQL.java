@@ -19,4 +19,8 @@ public @interface AutoFullBeanSQL {
      **/
     String sql() default "";
 
+    /**
+     * 是否支持查询子级
+     **/
+    boolean childLevel() default false;
 }

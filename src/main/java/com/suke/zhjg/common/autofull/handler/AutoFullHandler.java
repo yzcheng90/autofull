@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
 import com.suke.zhjg.common.autofull.config.AutoConfig;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,26 +29,50 @@ public class AutoFullHandler {
 
     public <T> IPage<T> full(IPage<T> iPage){
         if(CollUtil.isNotEmpty(iPage.getRecords())){
-            iPage.getRecords().forEach(obj-> BeanUtil.copyProperties( obj,handler(obj)));
+            iPage.getRecords().forEach(obj-> BeanUtil.copyProperties( obj,handler(obj,1)));
+        }
+        return iPage;
+    }
+
+    public <T> IPage<T> full(IPage<T> iPage,int level){
+        if(CollUtil.isNotEmpty(iPage.getRecords())){
+            iPage.getRecords().forEach(obj-> BeanUtil.copyProperties( obj,handler(obj,level)));
         }
         return iPage;
     }
 
     public <T> List<T> full(List<T> list){
         if(CollUtil.isNotEmpty(list)){
-            list.forEach(obj-> BeanUtil.copyProperties( obj,handler(obj)));
+            list.forEach(obj-> BeanUtil.copyProperties( obj,handler(obj,1)));
+        }
+        return list;
+    }
+
+    public <T> List<T> full(List<T> list,int level){
+        if(CollUtil.isNotEmpty(list)){
+            list.forEach(obj-> BeanUtil.copyProperties( obj,handler(obj,level)));
         }
         return list;
     }
 
     public <T> T full(T entity){
         if(ObjectUtil.isNotNull(entity)){
-            BeanUtil.copyProperties( entity,handler(entity));
+            BeanUtil.copyProperties( entity,handler(entity,1));
         }
         return entity;
     }
 
-    protected Object handler(Object obj){
+    public <T> T full(T entity,int level){
+        if(ObjectUtil.isNotNull(entity)){
+            BeanUtil.copyProperties( entity,handler(entity,level));
+        }
+        return entity;
+    }
+
+
+    protected Object handler(Object obj,int level){
+        ConfigProperties configProperties = ApplicationContextRegister.getApplicationContext().getBean(ConfigProperties.class);
+        configProperties.setCurrLevel(level);
         Field[] fields = obj.getClass().getDeclaredFields();
         if(fields != null) {
             for (Field field : fields) {
@@ -58,11 +83,16 @@ public class AutoFullHandler {
                         handler = (Handler) autoConfig.findBean(annotation);
                     }
                     if(handler != null){
-                        handler.result(annotation,fields,field,obj);
+                        handler.result(annotation,fields,field,obj,level);
                     }
                 }
             }
         }
        return obj;
+    }
+
+    public void setMaxLevel(int maxLevel){
+        ConfigProperties configProperties = ApplicationContextRegister.getApplicationContext().getBean(ConfigProperties.class);
+        configProperties.setMaxLevel(maxLevel);
     }
 }

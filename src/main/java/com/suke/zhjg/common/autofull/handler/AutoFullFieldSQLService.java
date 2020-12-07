@@ -3,9 +3,11 @@ package com.suke.zhjg.common.autofull.handler;
 import cn.hutool.core.collection.CollUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullFieldSQL;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
 import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -24,7 +26,10 @@ import java.util.regex.Matcher;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullFieldSQL.class)
-public class AutoFullFieldSQLService implements Handler{
+public class AutoFullFieldSQLService implements Handler {
+
+    @Autowired
+    public ConfigProperties configProperties;
 
     @Override
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
@@ -38,12 +43,14 @@ public class AutoFullFieldSQLService implements Handler{
             String fieldKey = matcher.group(1);
             sql = sql.replace("{" + fieldKey + "}"," ? ");
         }
-        log.info("SQL:{}",sql);
+        if(configProperties.isShowLog()){
+            log.info("LEVEL:{}, SQL:{}",configProperties.getMaxLevel(),sql);
+        }
         return sql;
     }
 
     @Override
-    public void result(Annotation annotation,Field[] fields, Field field, Object obj) {
+    public void result(Annotation annotation,Field[] fields, Field field, Object obj,int level) {
         try {
             if(annotation instanceof AutoFullFieldSQL){
                 AutoFullFieldSQL sqlAnnotation = field.getAnnotation(AutoFullFieldSQL.class);

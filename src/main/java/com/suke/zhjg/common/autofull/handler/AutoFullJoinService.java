@@ -2,7 +2,9 @@ package com.suke.zhjg.common.autofull.handler;
 
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullJoin;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -20,9 +22,12 @@ import java.util.regex.Pattern;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullJoin.class)
-public class AutoFullJoinService implements Handler{
+public class AutoFullJoinService implements Handler {
 
     public final String pattern = "(?!\\{)([^\\{\\}]+)(?=\\})";
+
+    @Autowired
+    public ConfigProperties configProperties;
 
     @Override
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
@@ -35,7 +40,7 @@ public class AutoFullJoinService implements Handler{
     }
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj,int level) {
         try {
             if(annotation instanceof AutoFullJoin){
                 AutoFullJoin fieldAnnotation = field.getAnnotation(AutoFullJoin.class);

@@ -2,6 +2,7 @@ package com.suke.zhjg.common.autofull;
 
 import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
 import com.suke.zhjg.common.autofull.config.AutoConfig;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.entity.OssEntity;
 import com.suke.zhjg.common.autofull.handler.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -17,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020/11/2514:17
  */
 @Configuration
-@EnableConfigurationProperties({OssEntity.class })
+@EnableConfigurationProperties({OssEntity.class, ConfigProperties.class })
 public class AutoFullConfiguration {
 
     @Bean

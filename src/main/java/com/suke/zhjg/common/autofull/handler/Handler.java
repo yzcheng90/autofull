@@ -1,5 +1,6 @@
 package com.suke.zhjg.common.autofull.handler;
 
+import com.suke.zhjg.common.autofull.util.ClassTypeUtil;
 import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 
 import java.lang.annotation.Annotation;
@@ -7,7 +8,6 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author czx
@@ -18,11 +18,11 @@ import java.util.regex.Pattern;
  */
 public interface Handler {
 
-    String sql(String table,String queryField,String alias,String conditionField,String condition);
+    String sql(String table, String queryField, String alias, String conditionField, String condition);
 
-    String sql(String sql,String conditionField);
+    String sql(String sql, String conditionField);
 
-   void result(Annotation annotation,Field[] fields, Field field, Object obj);
+   void result(Annotation annotation, Field[] fields, Field field, Object obj, int level);
 
     default Object findFieldValue(Field[] fields, String key, Object obj){
         for (Field field : fields){
@@ -45,7 +45,7 @@ public interface Handler {
         return null;
     }
 
-    default Map<Integer,Object> getParam(Field[] fields, Object obj,String sql){
+    default Map<Integer,Object> getParam(Field[] fields, Object obj, String sql){
         Map<Integer,Object> paramMap = new HashMap<>();
         Matcher matcher = StringSQLUtil.parse(sql);
         int index = 1;
@@ -56,6 +56,21 @@ public interface Handler {
             index ++;
         }
         return paramMap;
+    }
+
+    default Class<?> getListClassType(Field field){
+        Class<?>[] parameterizedType = ClassTypeUtil.getParameterizedListType(field);
+        return parameterizedType[0];
+    }
+
+    default Class<?> getBeanClassType(Field field){
+        Class<?> parameterizedType = field.getType();
+        return parameterizedType;
+    }
+
+    default Class<?> getClassType(Field field){
+        Class<?> parameterizedType = field.getType();
+        return parameterizedType;
     }
 
 }

@@ -3,7 +3,9 @@ package com.suke.zhjg.common.autofull.handler;
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullMask;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -19,7 +21,10 @@ import java.lang.reflect.Field;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullMask.class)
-public class AutoFullMaskService implements Handler{
+public class AutoFullMaskService implements Handler {
+
+    @Autowired
+    public ConfigProperties configProperties;
 
     private final String phoneStr = "****";
     private final String idCard = "********";
@@ -35,7 +40,7 @@ public class AutoFullMaskService implements Handler{
     }
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj,int level) {
         try {
             if(annotation instanceof AutoFullMask){
                 field.setAccessible(true);
