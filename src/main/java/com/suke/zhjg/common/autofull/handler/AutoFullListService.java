@@ -36,7 +36,7 @@ public class AutoFullListService implements Handler {
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
         String sql = ConstantSQL.SQL.SELECT + " * "+ ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ?";
         if(configProperties.isShowLog()){
-            log.info("LEVEL:{}, SQL:{}",configProperties.getMaxLevel(),sql);
+            log.info("LEVEL:{}, SQL:{}",configProperties.getCurrLevel(),sql);
         }
         return sql;
     }

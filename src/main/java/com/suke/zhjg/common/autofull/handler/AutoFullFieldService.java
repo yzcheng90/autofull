@@ -38,7 +38,7 @@ public class AutoFullFieldService implements Handler {
         String field = StrUtil.isBlank(queryField) ? alias : queryField + " " + ConstantSQL.SQL.AS + " " + alias;
         String sql = ConstantSQL.SQL.SELECT + " " + field + " "+ ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ?";
         if(configProperties.isShowLog()){
-            log.info("LEVEL:{}, SQL:{}",configProperties.getMaxLevel(),sql);
+            log.info("LEVEL:{}, SQL:{}",configProperties.getCurrLevel(),sql);
         }
         return sql;
     }

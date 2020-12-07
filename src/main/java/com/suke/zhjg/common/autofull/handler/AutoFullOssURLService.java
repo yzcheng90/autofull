@@ -56,7 +56,7 @@ public class AutoFullOssURLService implements Handler {
                         if(previewUrl != null && bucketName != null){
                             String url = previewUrl + "/" + bucketName + "/" + data;
                             if(configProperties.isShowLog()){
-                                log.info("LEVEL:{}, 填充地址:{}",configProperties.getMaxLevel(),url);
+                                log.info("LEVEL:{}, 填充地址:{}",configProperties.getCurrLevel(),url);
                             }
                             field.set(obj,url);
                         }

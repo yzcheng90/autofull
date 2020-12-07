@@ -45,7 +45,7 @@ public class AutoFullListSQLService implements Handler {
             sql = sql.replace("{" + fieldKey + "}"," ? ");
         }
         if(configProperties.isShowLog()){
-            log.info("LEVEL:{}, SQL:{}",configProperties.getMaxLevel(),sql);
+            log.info("LEVEL:{}, SQL:{}",configProperties.getCurrLevel(),sql);
         }
         return sql;
     }
