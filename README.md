@@ -1,4 +1,4 @@
-# zhjg-common-autofull
+# autofull-spring-boot-starter
 自动填充属性框架
 
 基于 springboot 和 mybatis plus
