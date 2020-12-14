@@ -72,9 +72,17 @@ public class SysUser extends Model<SysUser> {
 
   ..........
 
+  // 当前用户所有角色
   @TableField(exist = false)
   @AutoFullListSQL(sql = " select * from sys_role where create_user_id = {userId}")
   private List<SysRole> roleIdList;
+
+
+  // 当前用户所有菜单
+  @TableField(exist = false)
+  @AutoFullList(table = "sys_menu",conditionField = "userId")
+  private List<SysMenu> menuList;
+
 }
 ```
 
