@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Date;
 
 /**
  * @author czx
@@ -37,7 +38,37 @@ public class ClassTypeUtil {
                 return classes;
             }
         }
-        return null;
+        Class<?>[] classes = new Class<?>[1];
+        classes[0] = f.getType();
+        return classes;
+    }
+
+    public void setValue(Object obj,Field field,Object value) throws IllegalAccessException {
+        if (field.getType() == Integer.class) {
+            int val = ((Integer) value).intValue();
+            field.set(obj,val);
+        } else if (field.getType() == String.class) {
+            String val = (String) value;
+            field.set(obj,val);
+        } else if (field.getType() == Double.class) {
+            double val = ((Double) value).doubleValue();
+            field.set(obj,val);
+        } else if (field.getType() == Float.class) {
+            float val = ((Float) value).floatValue();
+            field.set(obj,val);
+        } else if (field.getType() == Long.class) {
+            long val = ((Long) value).longValue();
+            field.set(obj,val);
+        } else if (field.getType() == Boolean.class) {
+            boolean val = ((Boolean) value).booleanValue();
+            field.set(obj,val);
+        } else if (field.getType() == Date.class) {
+            Date val = (Date) value;
+            field.set(obj,val);
+        }else if(field.getType() == int.class){
+            int val = Integer.parseInt(String.valueOf(value));
+            field.set(obj,val);
+        }
     }
 
 }

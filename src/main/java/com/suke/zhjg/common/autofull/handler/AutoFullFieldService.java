@@ -5,9 +5,10 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullField;
-import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.constant.ConstantSQL;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
+import com.suke.zhjg.common.autofull.util.ClassTypeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -66,7 +67,7 @@ public class AutoFullFieldService implements Handler {
                     List<Map<String, Object>> result = AutoFullSqlExecutor.executeQuery(parseSql, paramMap);
                     if(CollUtil.isNotEmpty(result)){
                         Object val = result.get(0).get(alias);
-                        field.set(obj,val);
+                        ClassTypeUtil.setValue(obj,field,val);
                     }
                 }
             }

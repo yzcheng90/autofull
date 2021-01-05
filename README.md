@@ -48,6 +48,9 @@
 >
 >- 新增日志打印开关
 
+> v1.2.1
+>- 修复使用 @AutoFullField、@AutoFullFieldSQL 时类型转换错误
+>- 修复使用 @AutoFullBean 时不是泛型获取不到类型错误
 
 
 

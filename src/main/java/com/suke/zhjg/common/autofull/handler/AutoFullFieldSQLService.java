@@ -5,6 +5,7 @@ import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullFieldSQL;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
+import com.suke.zhjg.common.autofull.util.ClassTypeUtil;
 import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,7 @@ public class AutoFullFieldSQLService implements Handler {
                 List<Map<String, Object>> result = AutoFullSqlExecutor.executeQuery(this.sql(sql,null), param);
                 if(CollUtil.isNotEmpty(result)){
                     Object val = result.get(0).get(alias);
-                    field.set(obj,val);
+                    ClassTypeUtil.setValue(obj,field,val);
                 }
             }
         }catch (IllegalAccessException e){
