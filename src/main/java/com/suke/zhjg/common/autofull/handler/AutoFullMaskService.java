@@ -3,7 +3,9 @@ package com.suke.zhjg.common.autofull.handler;
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullMask;
+import com.suke.zhjg.common.autofull.constant.Constant;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
+import com.suke.zhjg.common.autofull.util.CryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,9 +28,6 @@ public class AutoFullMaskService implements Handler {
     @Autowired
     public ConfigProperties configProperties;
 
-    private final String phoneStr = "****";
-    private final String idCard = "********";
-
     @Override
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
         return null;
@@ -40,7 +39,7 @@ public class AutoFullMaskService implements Handler {
     }
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj,int level) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj,String sequence,int level) {
         try {
             if(annotation instanceof AutoFullMask){
                 field.setAccessible(true);
@@ -48,24 +47,34 @@ public class AutoFullMaskService implements Handler {
                 String data = (String) field.get(obj);
                 if(StrUtil.isNotEmpty(data) && StrUtil.isNotBlank(data)){
                     StringBuilder stringBuilder = new StringBuilder(data);
+                    String cutValue = "";
                     switch (autoFullMask.type()){
                         case phone:
                             if(data.length() == 11){
-                                stringBuilder.replace(3,7,phoneStr);
+                                cutValue = stringBuilder.substring(3,7);
+                                stringBuilder.replace(3,7, Constant.phone);
                             }else if (data.length() > 3){
-                                stringBuilder.replace(3,data.length() -1,idCard);
+                                cutValue = stringBuilder.substring(3,data.length() -1);
+                                stringBuilder.replace(3,data.length() -1, Constant.idCard);
                             }
                             break;
                         case idCard:
                             if(data.length() == 18){
-                                stringBuilder.replace(6,14,idCard);
+                                cutValue = stringBuilder.substring(6,14);
+                                stringBuilder.replace(6,14, Constant.idCard);
                             }else if (data.length() > 6 ){
-                                stringBuilder.replace(6,data.length() -1,idCard);
+                                cutValue = stringBuilder.substring(6,data.length() -1);
+                                stringBuilder.replace(6,data.length() -1, Constant.idCard);
                             }
                             break;
                     }
                     data = stringBuilder.toString();
-                    field.set(obj,data);
+                    String encrypt = CryptUtil.encrypt(cutValue);
+                    if(configProperties.isShowLog()){
+                        log.info("ID:{}, LEVEL:{}, 脱敏数据加密：{} 密钥：{}",sequence,level,cutValue,encrypt);
+                    }
+
+                    field.set(obj,data + Constant.flag + encrypt);
                 }
             }
         } catch (IllegalAccessException e) {

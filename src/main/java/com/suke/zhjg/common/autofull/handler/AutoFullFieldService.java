@@ -1,13 +1,14 @@
 package com.suke.zhjg.common.autofull.handler;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullField;
+import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.constant.ConstantSQL;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
-import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
+import com.suke.zhjg.common.autofull.sequence.AutoSequence;
+import com.suke.zhjg.common.autofull.sql.AutoFullSqlJdbcTemplate;
 import com.suke.zhjg.common.autofull.util.ClassTypeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,6 @@ import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author czx
@@ -38,9 +36,6 @@ public class AutoFullFieldService implements Handler {
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
         String field = StrUtil.isBlank(queryField) ? alias : queryField + " " + ConstantSQL.SQL.AS + " " + alias;
         String sql = ConstantSQL.SQL.SELECT + " " + field + " "+ ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ?";
-        if(configProperties.isShowLog()){
-            log.info("LEVEL:{}, SQL:{}",configProperties.getCurrLevel(),sql);
-        }
         return sql;
     }
 
@@ -50,24 +45,39 @@ public class AutoFullFieldService implements Handler {
     }
 
     @Override
-    public void result(Annotation annotation , Field[] fields, Field field, Object obj,int level) {
+    public void result(Annotation annotation , Field[] fields, Field field, Object obj,String sequence,int level) {
         try {
             if(annotation instanceof AutoFullField){
+                Object object = AutoSequence.init().get(sequence);
                 AutoFullField fieldAnnotation = field.getAnnotation(AutoFullField.class);
                 field.setAccessible(true);
                 String alias = field.getName();
                 String table = fieldAnnotation.table();
                 String tableField = fieldAnnotation.conditionField();
                 String queryField = fieldAnnotation.queryField();
+                boolean useCache = fieldAnnotation.useCache();
                 Object param = findFieldValue(fields,tableField,obj);
                 if(ObjectUtil.isNotNull(param)){
                     String parseSql = this.sql(table,queryField, alias, tableField,null);
-                    Map<Integer,Object> paramMap = new HashMap<>();
-                    paramMap.put(1,param);
-                    List<Map<String, Object>> result = AutoFullSqlExecutor.executeQuery(parseSql, paramMap);
-                    if(CollUtil.isNotEmpty(result)){
-                        Object val = result.get(0).get(alias);
-                        ClassTypeUtil.setValue(obj,field,val);
+                    if(configProperties.isShowLog()){
+                        log.info("ID:{}, LEVEL:{}, SQL:{}",sequence,level,parseSql);
+                        log.info("ID:{}, LEVEL:{}, param：{}",sequence,level,param);
+                    }
+                    String result = null;
+                    if(useCache){
+                        // 取缓存
+                        String stringData = AutoFullRedisCache.getStringData(parseSql, param);
+                        if(StrUtil.isNotEmpty(stringData)){
+                            result = stringData;
+                        }else {
+                            result = AutoFullSqlJdbcTemplate.queryObj(parseSql, String.class, param);
+                            AutoFullRedisCache.setData(parseSql,param,result);
+                        }
+                    }else {
+                        result = AutoFullSqlJdbcTemplate.queryObj(parseSql, String.class, param);
+                    }
+                    if(StrUtil.isNotEmpty(result)){
+                        ClassTypeUtil.setValue(obj,field,result);
                     }
                 }
             }

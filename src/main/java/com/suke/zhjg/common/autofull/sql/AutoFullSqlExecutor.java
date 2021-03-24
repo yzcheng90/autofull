@@ -1,6 +1,7 @@
 package com.suke.zhjg.common.autofull.sql;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.util.Map2BeanUtil;
 import lombok.experimental.UtilityClass;
@@ -100,7 +101,9 @@ public class AutoFullSqlExecutor {
                 T t = clazz.newInstance();
                 for (int i = 0; i < counts; i++) {
                     Object value = rs.getObject(columnNames[i]);
-                    Map2BeanUtil.setProperty(t,columnNames[i],value,level);
+                    if(ObjectUtil.isNotNull(value)){
+                        Map2BeanUtil.setProperty(t,columnNames[i],value,level);
+                    }
                 }
                 lists.add(t);
             }

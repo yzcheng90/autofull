@@ -23,4 +23,10 @@ public @interface AutoFullListSQL {
      * 是否支持查询子级
      **/
     boolean childLevel() default false;
+
+    /**
+     * 是否使用缓存
+     * 默认为true
+     **/
+    boolean useCache() default true;
 }

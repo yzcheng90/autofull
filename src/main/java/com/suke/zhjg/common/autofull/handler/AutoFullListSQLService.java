@@ -4,7 +4,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullListSQL;
+import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
+import com.suke.zhjg.common.autofull.sequence.AutoSequence;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
 import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -44,26 +46,47 @@ public class AutoFullListSQLService implements Handler {
             String fieldKey = matcher.group(1);
             sql = sql.replace("{" + fieldKey + "}"," ? ");
         }
-        if(configProperties.isShowLog()){
-            log.info("LEVEL:{}, SQL:{}",configProperties.getCurrLevel(),sql);
-        }
         return sql;
     }
 
     @Override
-    public void result(Annotation annotation , Field[] fields, Field field, Object obj,int level) {
+    public void result(Annotation annotation , Field[] fields, Field field, Object obj,String sequence,int level) {
         try {
             if(annotation instanceof AutoFullListSQL){
+                Object object = AutoSequence.init().get(sequence);
                 AutoFullListSQL fieldAnnotation = field.getAnnotation(AutoFullListSQL.class);
                 field.setAccessible(true);
                 String sql = fieldAnnotation.sql();
+                boolean useCache = fieldAnnotation.useCache();
                 Map<Integer,Object> param = getParam(fields,obj,sql);
                 if(ObjectUtil.isNotNull(param)){
-                    List<?> result = AutoFullSqlExecutor.executeQuery(this.sql(sql,null),getListClassType(field), param,level);
+                    String parseSql = this.sql(sql, null);
+                    if(configProperties.isShowLog()){
+                        log.info("ID:{}, LEVEL:{}, SQL:{}",sequence,level,parseSql);
+                        log.info("ID:{}, LEVEL:{}, param：{}",sequence,level,param);
+                    }
+
+                    List<?> result = null;
+                    if(useCache){
+                        // 取缓存
+                        List<?> data = AutoFullRedisCache.getList(parseSql, param,getBeanClassType(field));
+                        if(CollUtil.isNotEmpty(data)){
+                            result = data;
+                        }else {
+                            result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), param,level);
+                            AutoFullRedisCache.setData(parseSql,param,result);
+                        }
+                    }else {
+                        result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), param,level);
+                    }
+                    //List<?> result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), param,level);
                     if(CollUtil.isNotEmpty(result)){
-                        if(level < configProperties.getMaxLevel() && fieldAnnotation.childLevel()){
-                            level += 1;
-                            AutoFullHandler.full(result,level);
+                        if(ObjectUtil.isNotNull(object)){
+                            int maxLevel = (int) object;
+                            if(level < maxLevel && fieldAnnotation.childLevel()){
+                                level += 1;
+                                AutoFullHandler.full(result,sequence,level);
+                            }
                         }
                         field.set(obj,result);
                     }

@@ -5,6 +5,9 @@ import com.suke.zhjg.common.autofull.config.AutoConfig;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.entity.OssEntity;
 import com.suke.zhjg.common.autofull.handler.*;
+import com.suke.zhjg.common.autofull.interceptor.SqlInterceptor;
+import com.suke.zhjg.common.autofull.resolver.AutoDecodeMaskParamResolver;
+import com.suke.zhjg.common.autofull.sequence.AutoSequence;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +23,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties({OssEntity.class, ConfigProperties.class })
 public class AutoFullConfiguration {
+
+    @Bean
+    public AutoSequence autoSequence(){
+        return AutoSequence.init();
+    }
+
+    @Bean
+    public SqlInterceptor sqlInterceptor(){
+        return new SqlInterceptor();
+    }
+
+    @Bean
+    public AutoDecodeMaskParamResolver autoDecodeMaskResolver(){
+        return new AutoDecodeMaskParamResolver();
+    }
 
     @Bean
     public ApplicationContextRegister applicationContextRegister(){

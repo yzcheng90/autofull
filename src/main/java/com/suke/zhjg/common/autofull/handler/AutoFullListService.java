@@ -4,8 +4,10 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullList;
-import com.suke.zhjg.common.autofull.entity.ConfigProperties;
+import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.constant.ConstantSQL;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
+import com.suke.zhjg.common.autofull.sequence.AutoSequence;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +36,7 @@ public class AutoFullListService implements Handler {
 
     @Override
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
-        String sql = ConstantSQL.SQL.SELECT + " * "+ ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ?";
-        if(configProperties.isShowLog()){
-            log.info("LEVEL:{}, SQL:{}",configProperties.getCurrLevel(),sql);
-        }
+        String sql = ConstantSQL.SQL.SELECT + " * "+ ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ? ";
         return sql;
     }
 
@@ -47,24 +46,47 @@ public class AutoFullListService implements Handler {
     }
 
     @Override
-    public void result(Annotation annotation , Field[] fields, Field field, Object obj,int level) {
+    public void result(Annotation annotation , Field[] fields, Field field, Object obj,String sequence,int level) {
         try {
             if(annotation instanceof AutoFullList){
+                Object object = AutoSequence.init().get(sequence);
                 AutoFullList fieldAnnotation = field.getAnnotation(AutoFullList.class);
                 field.setAccessible(true);
                 String alias = field.getName();
                 String table = fieldAnnotation.table();
+                boolean useCache = fieldAnnotation.useCache();
                 String tableField = fieldAnnotation.conditionField();
                 Object param = findFieldValue(fields,tableField,obj);
                 if(ObjectUtil.isNotNull(param)){
-                    String parseSql = this.sql(table,null, alias, tableField,null);
+                    String parseSql = this.sql(table,null, alias, tableField,null) + " " + fieldAnnotation.orderBy();
                     Map<Integer,Object> paramMap = new HashMap<>();
                     paramMap.put(1,param);
-                    List<?> result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), paramMap,level);
+                    if(configProperties.isShowLog()){
+                        log.info("ID:{}, LEVEL:{}, SQL:{}",sequence,level,parseSql);
+                        log.info("ID:{}, LEVEL:{}, param：{}",sequence,level,param);
+                    }
+
+                    List<?> result = null;
+                    if(useCache){
+                        // 取缓存
+                        List<?> data = AutoFullRedisCache.getList(parseSql, param,getBeanClassType(field));
+                        if(CollUtil.isNotEmpty(data)){
+                            result = data;
+                        }else {
+                            result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), paramMap,level);
+                            AutoFullRedisCache.setData(parseSql,param,result);
+                        }
+                    }else {
+                        result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), paramMap,level);
+                    }
+                    //List<?> result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), paramMap,level);
                     if(CollUtil.isNotEmpty(result)){
-                        if(level < configProperties.getMaxLevel() && fieldAnnotation.childLevel()){
-                            level += 1;
-                            AutoFullHandler.full(result,level);
+                        if(ObjectUtil.isNotNull(object)){
+                            int maxLevel = (int) object;
+                            if(level < maxLevel && fieldAnnotation.childLevel()){
+                                level += 1;
+                                AutoFullHandler.full(result,sequence,level);
+                            }
                         }
                         field.set(obj,result);
                     }

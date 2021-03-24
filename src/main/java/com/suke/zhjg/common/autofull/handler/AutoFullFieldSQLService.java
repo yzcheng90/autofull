@@ -1,10 +1,12 @@
 package com.suke.zhjg.common.autofull.handler;
 
-import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullFieldSQL;
+import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
-import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
+import com.suke.zhjg.common.autofull.sequence.AutoSequence;
+import com.suke.zhjg.common.autofull.sql.AutoFullSqlJdbcTemplate;
 import com.suke.zhjg.common.autofull.util.ClassTypeUtil;
 import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 /**
@@ -44,25 +45,41 @@ public class AutoFullFieldSQLService implements Handler {
             String fieldKey = matcher.group(1);
             sql = sql.replace("{" + fieldKey + "}"," ? ");
         }
-        if(configProperties.isShowLog()){
-            log.info("LEVEL:{}, SQL:{}",configProperties.getCurrLevel(),sql);
-        }
         return sql;
     }
 
     @Override
-    public void result(Annotation annotation,Field[] fields, Field field, Object obj,int level) {
+    public void result(Annotation annotation,Field[] fields, Field field, Object obj,String sequence,int level) {
         try {
             if(annotation instanceof AutoFullFieldSQL){
+                Object object = AutoSequence.init().get(sequence);
                 AutoFullFieldSQL sqlAnnotation = field.getAnnotation(AutoFullFieldSQL.class);
                 field.setAccessible(true);
                 String alias = field.getName();
                 String sql = sqlAnnotation.sql();
-                Map<Integer,Object> param = getParam(fields,obj,sql);
-                List<Map<String, Object>> result = AutoFullSqlExecutor.executeQuery(this.sql(sql,null), param);
-                if(CollUtil.isNotEmpty(result)){
-                    Object val = result.get(0).get(alias);
-                    ClassTypeUtil.setValue(obj,field,val);
+                boolean useCache = sqlAnnotation.useCache();
+                List<Object> param = getParamList(fields,obj,sql);
+                String parseSql = this.sql(sql, null);
+                if(configProperties.isShowLog()){
+                    log.info("ID:{}, LEVEL:{}, SQL:{}",sequence,level,parseSql);
+                    log.info("ID:{}, LEVEL:{}, param：{}",sequence,level,param);
+                }
+                Object[] paramArray = param.toArray();
+                String result = null;
+                if(useCache){
+                    // 取缓存
+                    String stringData = AutoFullRedisCache.getStringData(parseSql, param);
+                    if(StrUtil.isNotEmpty(stringData)){
+                        result = stringData;
+                    }else {
+                        result = AutoFullSqlJdbcTemplate.queryObj(parseSql, String.class, paramArray);
+                        AutoFullRedisCache.setData(parseSql,param,result);
+                    }
+                }else {
+                    result = AutoFullSqlJdbcTemplate.queryObj(parseSql, String.class, paramArray);
+                }
+                if(StrUtil.isNotEmpty(result)){
+                    ClassTypeUtil.setValue(obj,field,result);
                 }
             }
         }catch (IllegalAccessException e){

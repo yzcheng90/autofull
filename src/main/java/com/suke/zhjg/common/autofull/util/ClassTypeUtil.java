@@ -1,5 +1,6 @@
 package com.suke.zhjg.common.autofull.util;
 
+import cn.hutool.core.date.DateUtil;
 import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
@@ -45,29 +46,62 @@ public class ClassTypeUtil {
 
     public void setValue(Object obj,Field field,Object value) throws IllegalAccessException {
         if (field.getType() == Integer.class) {
-            int val = ((Integer) value).intValue();
-            field.set(obj,val);
+            if(value != null){
+                int val = (Integer.valueOf(String.valueOf(value))).intValue();
+                field.set(obj,val);
+            }else {
+                field.set(obj,0);
+            }
         } else if (field.getType() == String.class) {
-            String val = (String) value;
+            String val = String.valueOf(value);
             field.set(obj,val);
         } else if (field.getType() == Double.class) {
-            double val = ((Double) value).doubleValue();
-            field.set(obj,val);
+            if(value != null){
+                double val = (Double.valueOf(String.valueOf(value))).doubleValue();
+                field.set(obj,val);
+            }else {
+                field.set(obj,0d);
+            }
         } else if (field.getType() == Float.class) {
-            float val = ((Float) value).floatValue();
-            field.set(obj,val);
+            if(value != null){
+                float val = (Float.valueOf(String.valueOf(value))).floatValue();
+                field.set(obj,val);
+            }else {
+                field.set(obj,0f);
+            }
         } else if (field.getType() == Long.class) {
-            long val = ((Long) value).longValue();
-            field.set(obj,val);
+            if(value != null){
+                long val = (Integer.valueOf(String.valueOf(value))).longValue();
+                field.set(obj,val);
+            }else {
+                field.set(obj,0l);
+            }
         } else if (field.getType() == Boolean.class) {
-            boolean val = ((Boolean) value).booleanValue();
-            field.set(obj,val);
+            if(value != null){
+                boolean val = ((Boolean) value).booleanValue();
+                field.set(obj,val);
+            }else {
+                field.set(obj,false);
+            }
         } else if (field.getType() == Date.class) {
-            Date val = (Date) value;
-            field.set(obj,val);
+            if(value != null){
+                if(value instanceof Date){
+                    Date val = (Date) value;
+                    field.set(obj,val);
+                }else {
+                    String dataStr = String.valueOf(value);
+                    field.set(obj,DateUtil.parseDate(dataStr));
+                }
+            }else {
+                field.set(obj,null);
+            }
         }else if(field.getType() == int.class){
-            int val = Integer.parseInt(String.valueOf(value));
-            field.set(obj,val);
+            if(value != null){
+                int val = Integer.parseInt(String.valueOf(value));
+                field.set(obj,val);
+            }else {
+                field.set(obj,0);
+            }
         }
     }
 

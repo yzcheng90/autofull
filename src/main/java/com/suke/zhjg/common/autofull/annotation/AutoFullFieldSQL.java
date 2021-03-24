@@ -19,4 +19,10 @@ public @interface AutoFullFieldSQL {
      **/
     String sql() default "";
 
+    /**
+     * 是否使用缓存
+     * 默认为true
+     **/
+    boolean useCache() default true;
+
 }

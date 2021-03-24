@@ -41,7 +41,7 @@ public class AutoFullOssURLService implements Handler {
     }
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj,int level) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj,String sequence,int level) {
         try {
             if(annotation instanceof AutoFullOssUrl){
                 field.setAccessible(true);
@@ -56,7 +56,7 @@ public class AutoFullOssURLService implements Handler {
                         if(previewUrl != null && bucketName != null){
                             String url = previewUrl + "/" + bucketName + "/" + data;
                             if(configProperties.isShowLog()){
-                                log.info("LEVEL:{}, 填充地址:{}",configProperties.getCurrLevel(),url);
+                                log.info("ID:{}, LEVEL:{}, 填充地址:{}",sequence,level,url);
                             }
                             field.set(obj,url);
                         }

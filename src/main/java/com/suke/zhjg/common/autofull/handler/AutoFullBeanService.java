@@ -4,8 +4,10 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullBean;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
-import com.suke.zhjg.common.autofull.entity.ConfigProperties;
+import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.constant.ConstantSQL;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
+import com.suke.zhjg.common.autofull.sequence.AutoSequence;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +37,6 @@ public class AutoFullBeanService implements Handler {
     @Override
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
         String sql = ConstantSQL.SQL.SELECT + " * "+ ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ?";
-        if(configProperties.isShowLog()){
-            log.info("LEVEL:{}, SQL:{}",configProperties.getCurrLevel(),sql);
-        }
         return sql;
     }
 
@@ -47,24 +46,45 @@ public class AutoFullBeanService implements Handler {
     }
 
     @Override
-    public void result(Annotation annotation , Field[] fields, Field field, Object obj,int level) {
+    public void result(Annotation annotation , Field[] fields, Field field, Object obj,String sequence,int level) {
         try {
             if(annotation instanceof AutoFullBean){
+                Object object = AutoSequence.init().get(sequence);
                 AutoFullBean fieldAnnotation = field.getAnnotation(AutoFullBean.class);
                 field.setAccessible(true);
                 String alias = field.getName();
                 String table = fieldAnnotation.table();
+                boolean useCache = fieldAnnotation.useCache();
                 String tableField = fieldAnnotation.conditionField();
                 Object param = findFieldValue(fields,tableField,obj);
                 if(ObjectUtil.isNotNull(param)){
                     String sql = this.sql(table,null, alias, tableField,null);
+                    if(configProperties.isShowLog()){
+                        log.info("ID:{}, LEVEL:{}, SQL:{}",sequence,level,sql);
+                        log.info("ID:{}, LEVEL:{}, param：{}",sequence,level,param);
+                    }
                     Map<Integer,Object> paramMap = new HashMap<>();
                     paramMap.put(1,param);
-                    List<?> result = AutoFullSqlExecutor.executeQuery(sql, getBeanClassType(field),paramMap,level);
+                    List<?> result = null;
+                    if(useCache){
+                        // 取缓存
+                        List<?> data = AutoFullRedisCache.getList(sql, param,getBeanClassType(field));
+                        if(CollUtil.isNotEmpty(data)){
+                            result = data;
+                        }else {
+                            result = AutoFullSqlExecutor.executeQuery(sql, getBeanClassType(field),paramMap,level);
+                            AutoFullRedisCache.setData(sql,param,result);
+                        }
+                    }else {
+                        result = AutoFullSqlExecutor.executeQuery(sql, getBeanClassType(field),paramMap,level);
+                    }
                     if(CollUtil.isNotEmpty(result)){
-                        if(level < configProperties.getMaxLevel() && fieldAnnotation.childLevel()){
-                            level += 1;
-                            AutoFullHandler.full(result,level);
+                        if(ObjectUtil.isNotNull(object)){
+                            int maxLevel = (int) object;
+                            if(level < maxLevel && fieldAnnotation.childLevel()){
+                                level += 1;
+                                AutoFullHandler.full(result,sequence,level);
+                            }
                         }
                         field.set(obj,result.get(0));
                     }

@@ -5,7 +5,9 @@ import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -22,7 +24,7 @@ public interface Handler {
 
     String sql(String sql, String conditionField);
 
-   void result(Annotation annotation, Field[] fields, Field field, Object obj, int level);
+   void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level);
 
     default Object findFieldValue(Field[] fields, String key, Object obj){
         for (Field field : fields){
@@ -56,6 +58,17 @@ public interface Handler {
             index ++;
         }
         return paramMap;
+    }
+
+    default  List<Object> getParamList(Field[] fields, Object obj, String sql){
+        List<Object> paramList = new ArrayList<>();
+        Matcher matcher = StringSQLUtil.parse(sql);
+        while(matcher.find()){
+            String fieldKey = matcher.group(1);
+            Object param = findFieldValue(fields,fieldKey,obj);
+            paramList.add(param);
+        }
+        return paramList;
     }
 
     default Class<?> getListClassType(Field field){

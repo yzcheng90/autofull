@@ -40,7 +40,7 @@ public class AutoFullJoinService implements Handler {
     }
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj,int level) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj,String sequence,int level) {
         try {
             if(annotation instanceof AutoFullJoin){
                 AutoFullJoin fieldAnnotation = field.getAnnotation(AutoFullJoin.class);

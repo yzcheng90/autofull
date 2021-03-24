@@ -1,5 +1,6 @@
 package com.suke.zhjg.common.autofull.annotation;
 
+
 import com.suke.zhjg.common.autofull.config.MaskType;
 
 import java.lang.annotation.*;

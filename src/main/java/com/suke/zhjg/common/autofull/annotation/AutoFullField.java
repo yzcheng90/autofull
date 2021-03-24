@@ -29,4 +29,9 @@ public @interface AutoFullField {
      **/
     String queryField() default "";
 
+    /**
+     * 是否使用缓存
+     * 默认为true
+     **/
+    boolean useCache() default true;
 }

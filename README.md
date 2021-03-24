@@ -3,26 +3,36 @@
 
 基于 springboot 和 mybatis plus
 
-### 使用方法1：
+### 依赖：
 ```java
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
   <artifactId>autofull-spring-boot-starter</artifactId>
-  <version>1.2.1</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 
-
-### 使用方法2：
-
-> 1、下载项目然后作为一个module添加到自己项目中
->
-> 2、pom中的 parent 改成自己项目
->
-> 3、在bean中的字段上加上对应注解
->
-> 4、最后使用 AutoFullHandler.full(obj);
-
+### 配置
+```yaml
+#redis 配置
+spring:
+  redis:
+    cache:
+      host: 127.0.0.1:6379
+      password:
+#填充框架配置
+autofull:
+  show-log: false
+  max-level: 1
+#文件系统配置 @AutoFullOssUrl 注解使用
+oss:
+  enable: true
+  url: http://192.168.0.212:9000
+  previewUrl: http://192.168.0.212:9000
+  access-key: xxxx
+  secret-key: xxxxx
+  bucket-name: xxx
+```
 
 ### 功能
 > v1.0.0
@@ -52,7 +62,9 @@
 >- 修复使用 @AutoFullField、@AutoFullFieldSQL 时类型转换错误
 >- 修复使用 @AutoFullBean 时不是泛型获取不到类型错误
 
-
+> v1.3.0
+- 新增@AutoDecodeMask 参数自动解密注解
+- 新增redis 缓存,第一次填充数据就会缓存到redis,如果有对该表修改则删除改表缓存
 
 ### 示例代码：
 
@@ -312,57 +324,7 @@ return R.ok().autoFullData(list);
   >
   >使用这个功能需要在yml中配置
 
-  ```yaml
-  # 文件系统
-  oss:
-    url: http://192.168.0.212:9000
-    previewUrl: http://192.168.0.212:9000
-    access-key: xxxxx
-    secret-key: xxxxx
-    bucket-name: xxxx
-  ```
 
-### 自定义扩展：
-
-> 1、自己创建一个注解  比如： `AutuFullxxx`
->
-> 2、再写一个实现类 AutuFullxxxService
-
-```java
-@Slf4j
-@Component
-@AutoFullConfiguration(type = AutuFullxxx.class)
-public class AutuFullxxxService implements Handler{
-
-    @Override
-    public String sql(String table, String queryField, String alias, String conditionField, String condition) {
-        return null;
-    }
-
-    @Override
-    public String sql(String sql, String conditionField) {
-        return null;
-    }
-
-    @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj) {
-        try {
-            if(annotation instanceof AutuFullxxx){
-                AutuFullxxx fieldAnnotation = field.getAnnotation(AutuFullxxx.class);
-                if(fieldAnnotation != null){
-                    field.setAccessible(true);
-                    String value = fieldAnnotation.value();
-                   	// 具体实现逻辑
-                    field.set(obj,value);
-                }
-            }
-        } catch (IllegalAccessException e) {
-            log.error("填充字符连接失败,{}",e);
-            e.printStackTrace();
-        }
-    }
-}
-```
 
  **最后**
 

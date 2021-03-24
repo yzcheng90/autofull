@@ -29,4 +29,16 @@ public @interface AutoFullList {
      **/
     boolean childLevel() default false;
 
+    /**
+     * 排序
+     * orderBy = name desc
+     **/
+    String orderBy() default "";
+
+    /**
+     * 是否使用缓存
+     * 默认为true
+     **/
+    boolean useCache() default true;
+
 }

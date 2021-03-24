@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.suke.zhjg.common.autofull.AutoFullConfiguration
+  com.suke.zhjg.common.autofull.AutoFullConfiguration,\
+  com.suke.zhjg.common.autofull.config.RedisConfiguration
