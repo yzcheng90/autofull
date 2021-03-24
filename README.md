@@ -34,6 +34,9 @@ oss:
   bucket-name: xxx
 ```
 
+### 相关博客
+> CSDN《[自动填充系列](https://blog.csdn.net/qq_15273441/category_10912977.html)》 
+
 ### 功能
 > v1.0.0
 >- @AutoFullBean  自动填充Bean
