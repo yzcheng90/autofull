@@ -158,166 +158,55 @@ return R.ok().autoFullData(list);
 ### 注解介绍：
 
 - AutoFullBean   ( 填充一个对象)
-
-  ```java
-  @Documented
-  @Target({ElementType.FIELD})
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface AutoFullBean {
-  
-      /**
-       * 表名
-       **/
-      String table() default "";
-  
-      /**
-       * 条件字段
-       **/
-      String conditionField() default "";
-  
-  }
-  ```
-
   > ```java
   > @AutoFullBean(table="sys_role", conditionField = "userId")
+  > public SysRole sysRole;
   > ```
 
 - AutoFullBeanSQL  ( 填充一个对象 自定义sql)
-
-  ```java
-  @Documented
-  @Target({ElementType.FIELD})
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface AutoFullBeanSQL {
-  
-      /**
-       * sql
-       **/
-      String sql() default "";
-  
-  }
-  ```
-
   > ```java
   > @AutoFullListSQL(sql = " select * from sys_role where create_user_id = {userId}")
+  > public List<SysRole> sysRole;
   > ```
 
 - AutoFullField  ( 填充一个字段 )
-
-  ```java
-  @Documented
-  @Target({ElementType.FIELD})
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface AutoFullField {
-  
-      /**
-       * 表名
-       **/
-      String table() default "";
-  
-      /**
-       * 条件字段
-       **/
-      String conditionField() default "";
-  
-      /**
-       * 查询字段
-       **/
-      String queryField() default "";
-  
-  }
-  ```
-
   > ```java
-  > 
   > @AutoFullField(table="表名",conditionField = "条件字段",queryField = "sName")
   > public String sName;
   > ```
 
 - AutoFullFieldSQL  ( 填充一个字段 自定义sql)
-
-  ```java
-  @Documented
-  @Target({ElementType.FIELD})
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface AutoFullFieldSQL {
-  
-      /**
-       * 自定义 SQL
-       **/
-      String sql() default "";
-  
-  }
-  ```
-
-  ```java
-  @AutoFullFieldSQL(sql = "select name from xxxx where id = {id} ")
-  public String name;
-  ```
+    >  ```java
+    >  @AutoFullFieldSQL(sql = "select name from xxxx where id = {id} ")
+    >  public String name;
+    > ```
 
 - AutoFullList  ( 填充一个List对象 ）
-
-  ```java
-  @Documented
-  @Target({ElementType.FIELD})
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface AutoFullList {
-  
-      /**
-       * 表名
-       **/
-      String table() default "";
-  
-      /**
-       * 条件字段
-       **/
-      String conditionField() default "";
-  
-  }
-  ```
-
-  ```java
-  @AutoFullList(table = "表名",conditionField = "字段名")
-  public List<SysRole> roles;
-  ```
+    >  ```java
+    >  @AutoFullList(table = "表名",conditionField = "字段名")
+    >  public List<SysRole> roles;
+    >  ```
 
 - AutoFullListSQL  ( 填充一个List对象 自定义sql)
-
-  ```java
-  @Documented
-  @Target({ElementType.FIELD})
-  @Retention(RetentionPolicy.RUNTIME)
-  public @interface AutoFullListSQL {
-  
-      /**
-       * 表名
-       **/
-      String sql() default "";
-  
-  }
-  ```
-
-  ```java
-  @AutoFullFieldSQL(sql = "select * from xxxx where id = {id} ")
-  public List<SysRole> roles;
-  ```
+    >  ```java
+    >  @AutoFullFieldSQL(sql = "select * from xxxx where id = {id} ")
+    >  public List<SysRole> roles;
+    >  ```
 
 - AutoFullJoin  （字段拼接）
-
-  ```java
-  @AutoFullJoin(value = "湖南省长沙市岳麓区{park}5栋{number}")
-  public String address;
-  ```
+    >  ```java
+    >  @AutoFullJoin(value = "湖南省长沙市岳麓区{park}5栋{number}")
+    >  public String address;
+    >  ```
 
 - AutoFullOssUrl  ( 填充OSS预览地址)
-
-  ```java
-  @ApiModelProperty(value = "文件存储路径")
-  @JsonProperty(value = "sFileUrl")
-  @AutoFullOssUrl
-  public String sFileUrl;
-  ```
-
+    >  ```java
+    >  @ApiModelProperty(value = "文件存储路径")
+    >  @JsonProperty(value = "sFileUrl")
+    >  @AutoFullOssUrl
+    >  public String sFileUrl;
+    >  ```
+    >
   >比如数据库保存的是  2020/10/01/xxx.jpg
   >
   >返回给前台要完整路径，比如  http://192.168.0.212:9000/xxx/2020/10/01/xxx.jpg
