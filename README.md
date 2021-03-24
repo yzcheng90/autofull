@@ -3,7 +3,7 @@
 
 基于 springboot 和 mybatis plus
 
-### 依赖：
+### 依赖
 ```java
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
@@ -44,10 +44,10 @@ oss:
 >- @AutoFullListSQL  自动填充List自定义SQL
 >- @AutoFullJoin  多字段拼接
 >- @AutoFullOssUrl  自动拼接OSS预览地址
-
+>
 > v1.1.0
 > - @AutoFullMask 数据脱敏 支持手机号和身份证 比如：138****8888
-
+>
 > v1.2.0
 >- @AutoFullBean
 >- @AutoFullBeanSQL
@@ -57,14 +57,14 @@ oss:
 >- 比如 用户表中有角色，角色表中还有权限，如果在用户表使用注解查询角色时 childLevel = true 那么查询用户的时候自动查询角色和权限
 >
 >- 新增日志打印开关
-
+>
 > v1.2.1
 >- 修复使用 @AutoFullField、@AutoFullFieldSQL 时类型转换错误
 >- 修复使用 @AutoFullBean 时不是泛型获取不到类型错误
-
+>
 > v1.3.0
-- 新增@AutoDecodeMask 参数自动解密注解
-- 新增redis 缓存,第一次填充数据就会缓存到redis,如果有对该表修改则删除改表缓存
+>- 新增@AutoDecodeMask 参数自动解密注解
+>- 新增redis 缓存,第一次填充数据就会缓存到redis,如果有对该表修改则删除改表缓存
 
 ### 示例代码：
 
