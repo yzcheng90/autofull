@@ -8,9 +8,11 @@ import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.constant.ConstantSQL;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.sequence.AutoSequence;
-import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
+import com.suke.zhjg.common.autofull.sql.AutoFullSqlJdbcTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -68,15 +70,19 @@ public class AutoFullBeanService implements Handler {
                     List<?> result = null;
                     if(useCache){
                         // 取缓存
-                        List<?> data = AutoFullRedisCache.getList(sql, param,getBeanClassType(field));
+                        List<?> data = AutoFullRedisCache.getList(sequence,sql, param,getBeanClassType(field));
                         if(CollUtil.isNotEmpty(data)){
                             result = data;
                         }else {
-                            result = AutoFullSqlExecutor.executeQuery(sql, getBeanClassType(field),paramMap,level);
-                            AutoFullRedisCache.setData(sql,param,result);
+                            Class<?> classType = getBeanClassType(field);
+                            RowMapper<?> rm = BeanPropertyRowMapper.newInstance(classType);
+                            result = AutoFullSqlJdbcTemplate.queryList(sql, rm, param);
+                            AutoFullRedisCache.setData(sequence,sql,param,result);
                         }
                     }else {
-                        result = AutoFullSqlExecutor.executeQuery(sql, getBeanClassType(field),paramMap,level);
+                        Class<?> classType = getBeanClassType(field);
+                        RowMapper<?> rm = BeanPropertyRowMapper.newInstance(classType);
+                        result = AutoFullSqlJdbcTemplate.queryList(sql, rm, param);
                     }
                     if(CollUtil.isNotEmpty(result)){
                         if(ObjectUtil.isNotNull(object)){

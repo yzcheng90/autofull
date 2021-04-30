@@ -64,31 +64,31 @@ public class AutoFullRedisCache {
         return SecureUtil.md5(sql + paramStr);
     }
 
-    public <T> List<T> getList(String sql, Object param,T t){
+    public <T> List<T> getList(String ID,String sql, Object param,T t){
         String key = getKey(sql, param);
         Object data = getRedisTemplate().opsForValue().get(key);
         if(ObjectUtil.isNotNull(data)){
             if(getConfigProperties().isShowLog()){
-                log.info("取缓存数据：{}",key);
+                log.info("ID:{},取缓存数据,key:{}",ID,key);
             }
             return (List<T>) data;
         }
         return null;
     }
 
-    public String getStringData(String sql, Object param){
+    public String getStringData(String ID,String sql, Object param){
         String key = getKey(sql, param);
         Object data = getRedisTemplate().opsForValue().get(key);
         if(ObjectUtil.isNotNull(data)){
             if(getConfigProperties().isShowLog()){
-                log.info("取缓存数据：{}",key);
+                log.info("ID:{},取缓存数据,key:{}",ID,key);
             }
             return (String) data;
         }
         return null;
     }
 
-    public void setData(String sql,Object param,Object data){
+    public void setData(String ID,String sql,Object param,Object data){
         if(ObjectUtil.isNull(data)){
             return;
         }
@@ -100,18 +100,18 @@ public class AutoFullRedisCache {
         tableName.forEach(name ->{
             String tableKey = name + key;
             if(getConfigProperties().isShowLog()){
-                log.info("保存缓存key：{}",tableKey);
+                log.info("ID:{},保存缓存key：{}",ID,tableKey);
             }
             valueOperations.set(tableKey,key,expireTime, TimeUnit.MINUTES);
         });
         // 保存 key 和数据
         valueOperations.set(key,data,expireTime, TimeUnit.MINUTES);
         if(getConfigProperties().isShowLog()){
-            log.info("保存缓存keyData：{}",key);
+            log.info("ID:{},保存缓存key：{}",ID,key);
         }
     }
 
-    public void deleteData(String tableName){
+    public void deleteData(String ID,String tableName){
         RedisTemplate redisTemplate = getRedisTemplate();
         StringRedisTemplate stringRedisTemplate = getStringRedisTemplate();
         Set<String> keys = stringRedisTemplate.keys("*" + tableName + "*");
@@ -124,12 +124,12 @@ public class AutoFullRedisCache {
                     // 删除 key 对应的数据
                     redisTemplate.delete(keyData);
                     if(getConfigProperties().isShowLog()){
-                        log.info("删除缓存keyData：{}",keyData);
+                        log.info("ID:{},删除缓存keyData：{}",ID,keyData);
                     }
                 }
                 stringRedisTemplate.delete(key);
                 if(getConfigProperties().isShowLog()){
-                    log.info("删除缓存key：{}",key);
+                    log.info("ID:{},删除缓存keyData：{}",ID,key);
                 }
             });
         }

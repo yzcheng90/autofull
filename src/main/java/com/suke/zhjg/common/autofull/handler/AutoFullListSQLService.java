@@ -7,10 +7,12 @@ import com.suke.zhjg.common.autofull.annotation.AutoFullListSQL;
 import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.sequence.AutoSequence;
-import com.suke.zhjg.common.autofull.sql.AutoFullSqlExecutor;
+import com.suke.zhjg.common.autofull.sql.AutoFullSqlJdbcTemplate;
 import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -69,17 +71,22 @@ public class AutoFullListSQLService implements Handler {
                     List<?> result = null;
                     if(useCache){
                         // 取缓存
-                        List<?> data = AutoFullRedisCache.getList(parseSql, param,getBeanClassType(field));
+                        List<?> data = AutoFullRedisCache.getList(sequence,parseSql, param,getBeanClassType(field));
                         if(CollUtil.isNotEmpty(data)){
                             result = data;
                         }else {
-                            result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), param,level);
-                            AutoFullRedisCache.setData(parseSql,param,result);
+                            Class<?> classType = getListClassType(field);
+                            List<Object> paramList = getParamList(fields, obj, sql);
+                            RowMapper<?> rm = BeanPropertyRowMapper.newInstance(classType);
+                            result = AutoFullSqlJdbcTemplate.queryList(parseSql, rm, paramList.toArray());
+                            AutoFullRedisCache.setData(sequence,parseSql,param,result);
                         }
                     }else {
-                        result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), param,level);
+                        Class<?> classType = getListClassType(field);
+                        List<Object> paramList = getParamList(fields, obj, sql);
+                        RowMapper<?> rm = BeanPropertyRowMapper.newInstance(classType);
+                        result = AutoFullSqlJdbcTemplate.queryList(parseSql, rm, paramList.toArray());
                     }
-                    //List<?> result = AutoFullSqlExecutor.executeQuery(parseSql,getListClassType(field), param,level);
                     if(CollUtil.isNotEmpty(result)){
                         if(ObjectUtil.isNotNull(object)){
                             int maxLevel = (int) object;

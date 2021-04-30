@@ -22,6 +22,7 @@ import java.util.Map;
  */
 @Slf4j
 @UtilityClass
+@Deprecated
 public class AutoFullSqlExecutor {
 
     public <T> List<Map<String,T>> executeQuery(String sql, Map<Integer,T> params){

@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.util.List;
 
@@ -42,12 +43,12 @@ public class AutoFullSqlJdbcTemplate {
         }
     }
 
-    public <T> List<T> queryList(String sql, Class<T> resultType, Object... params){
+    public <T> List<T> queryList(String sql, RowMapper<T> resultType, Object... params){
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
         if(ArrayUtil.isNotEmpty(params)){
-            return jdbcTemplate.queryForList(sql,resultType,params);
+            return jdbcTemplate.query(sql,resultType,params);
         }else {
-            return jdbcTemplate.queryForList(sql,resultType);
+            return jdbcTemplate.query(sql,resultType);
         }
     }
 

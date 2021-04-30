@@ -71,7 +71,7 @@ public class SqlInterceptor implements Interceptor {
                         break;
                 }
                 if(CollUtil.isNotEmpty(tables)){
-                    tables.forEach(table -> AutoFullRedisCache.deleteData(table));
+                    tables.forEach(table -> AutoFullRedisCache.deleteData(null,table));
                 }
             }
         }

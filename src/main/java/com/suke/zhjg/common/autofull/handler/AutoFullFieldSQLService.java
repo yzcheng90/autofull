@@ -68,12 +68,12 @@ public class AutoFullFieldSQLService implements Handler {
                 String result = null;
                 if(useCache){
                     // 取缓存
-                    String stringData = AutoFullRedisCache.getStringData(parseSql, param);
+                    String stringData = AutoFullRedisCache.getStringData(sequence,parseSql, param);
                     if(StrUtil.isNotEmpty(stringData)){
                         result = stringData;
                     }else {
                         result = AutoFullSqlJdbcTemplate.queryObj(parseSql, String.class, paramArray);
-                        AutoFullRedisCache.setData(parseSql,param,result);
+                        AutoFullRedisCache.setData(sequence,parseSql,param,result);
                     }
                 }else {
                     result = AutoFullSqlJdbcTemplate.queryObj(parseSql, String.class, paramArray);

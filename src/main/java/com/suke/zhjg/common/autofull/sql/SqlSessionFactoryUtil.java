@@ -18,6 +18,7 @@ import java.sql.SQLException;
  */
 @Slf4j
 @UtilityClass
+@Deprecated
 public class SqlSessionFactoryUtil {
 
     public Connection connection;
