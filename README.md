@@ -36,12 +36,7 @@ autofull:
   max-level: 1
 #如果使用 @AutoFullOssUrl 要配置文件系统配置 
 oss:
-  enable: true
-  url: http://192.168.0.212:9000
   previewUrl: http://192.168.0.212:9000
-  access-key: xxxx
-  secret-key: xxxxx
-  bucket-name: xxx
 ```
 
 ### 示例代码：
