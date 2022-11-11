@@ -29,4 +29,15 @@ public class ConfigProperties {
     @Getter
     public int currLevel = 0;
 
+    // 加密分隔标志
+    @Setter
+    @Getter
+    public String encryptFlag = "@suke@";
+
+    // 加密密钥  16位
+    @Setter
+    @Getter
+    public String encryptKeys = "suke172839456000";
+
+
 }

@@ -5,12 +5,10 @@ import cn.hutool.core.util.ObjectUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullListSQL;
 import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
-import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.sequence.AutoSequence;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlJdbcTemplate;
 import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -31,77 +29,69 @@ import java.util.regex.Matcher;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullListSQL.class)
-public class AutoFullListSQLService implements Handler {
-
-    @Autowired
-    public ConfigProperties configProperties;
-
-    @Override
-    public String sql(String table, String queryField, String alias, String conditionField, String condition) {
-        return null;
-    }
+public class AutoFullListSQLService extends DefaultHandler {
 
     @Override
     public String sql(String sql, String conditionField) {
         Matcher matcher = StringSQLUtil.parse(sql);
-        while(matcher.find()){
+        while (matcher.find()) {
             String fieldKey = matcher.group(1);
-            sql = sql.replace("{" + fieldKey + "}"," ? ");
+            sql = sql.replace("{" + fieldKey + "}", " ? ");
         }
         return sql;
     }
 
     @Override
-    public void result(Annotation annotation , Field[] fields, Field field, Object obj,String sequence,int level) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level) {
         try {
-            if(annotation instanceof AutoFullListSQL){
+            if (annotation instanceof AutoFullListSQL) {
                 Object object = AutoSequence.init().get(sequence);
                 AutoFullListSQL fieldAnnotation = field.getAnnotation(AutoFullListSQL.class);
                 field.setAccessible(true);
                 String sql = fieldAnnotation.sql();
                 boolean useCache = fieldAnnotation.useCache();
-                Map<Integer,Object> param = getParam(fields,obj,sql);
-                if(ObjectUtil.isNotNull(param)){
+                Map<Integer, Object> param = getParam(fields, obj, sql);
+                if (ObjectUtil.isNotNull(param)) {
                     String parseSql = this.sql(sql, null);
-                    if(configProperties.isShowLog()){
-                        log.info("ID:{}, LEVEL:{}, SQL:{}",sequence,level,parseSql);
-                        log.info("ID:{}, LEVEL:{}, param：{}",sequence,level,param);
+                    if (configProperties.isShowLog()) {
+                        log.info("ID:{}, LEVEL:{}, SQL:{}", sequence, level, parseSql);
+                        log.info("ID:{}, LEVEL:{}, param：{}", sequence, level, param);
                     }
 
                     List<?> result = null;
-                    if(useCache){
+                    if (useCache) {
                         // 取缓存
-                        List<?> data = AutoFullRedisCache.getList(sequence,parseSql, param,getBeanClassType(field));
-                        if(CollUtil.isNotEmpty(data)){
+                        List<?> data = AutoFullRedisCache.getList(sequence, parseSql, param, getBeanClassType(field));
+                        if (CollUtil.isNotEmpty(data)) {
                             result = data;
-                        }else {
+                        } else {
                             Class<?> classType = getListClassType(field);
                             List<Object> paramList = getParamList(fields, obj, sql);
                             RowMapper<?> rm = BeanPropertyRowMapper.newInstance(classType);
                             result = AutoFullSqlJdbcTemplate.queryList(parseSql, rm, paramList.toArray());
-                            AutoFullRedisCache.setData(sequence,parseSql,param,result);
+                            AutoFullRedisCache.setData(sequence, parseSql, param, result);
                         }
-                    }else {
+                    } else {
                         Class<?> classType = getListClassType(field);
                         List<Object> paramList = getParamList(fields, obj, sql);
                         RowMapper<?> rm = BeanPropertyRowMapper.newInstance(classType);
                         result = AutoFullSqlJdbcTemplate.queryList(parseSql, rm, paramList.toArray());
                     }
-                    if(CollUtil.isNotEmpty(result)){
-                        if(ObjectUtil.isNotNull(object)){
+                    if (CollUtil.isNotEmpty(result)) {
+                        if (ObjectUtil.isNotNull(object)) {
                             int maxLevel = (int) object;
-                            if(level < maxLevel && fieldAnnotation.childLevel()){
+                            if (level < maxLevel && fieldAnnotation.childLevel()) {
                                 level += 1;
-                                AutoFullHandler.full(result,sequence,level);
+                                AutoFullHandler.full(result, sequence, level);
                             }
                         }
-                        field.set(obj,result);
+                        field.set(obj, result);
                     }
                 }
             }
 
-        }catch (IllegalAccessException e){
-            log.error("填充List失败:{}",e);
+        } catch (IllegalAccessException e) {
+            log.error("填充List失败:{}", e);
             e.printStackTrace();
         }
     }

@@ -5,12 +5,10 @@ import cn.hutool.core.util.ObjectUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullBeanSQL;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
-import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.sequence.AutoSequence;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlJdbcTemplate;
 import com.suke.zhjg.common.autofull.util.StringSQLUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -31,15 +29,7 @@ import java.util.regex.Matcher;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullBeanSQL.class)
-public class AutoFullBeanSQLService implements Handler {
-
-    @Autowired
-    public ConfigProperties configProperties;
-
-    @Override
-    public String sql(String table, String queryField, String alias, String conditionField, String condition) {
-        return null;
-    }
+public class AutoFullBeanSQLService  extends DefaultHandler {
 
     @Override
     public String sql(String sql, String conditionField) {

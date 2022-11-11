@@ -9,4 +9,6 @@ package com.suke.zhjg.common.autofull.constant;
  */
 public interface ConstantBeans {
 
+    String cacheName = "autofull:";
+
 }

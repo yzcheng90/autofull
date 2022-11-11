@@ -5,7 +5,9 @@ import cn.hutool.core.util.ArrayUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoDecodeMask;
 import com.suke.zhjg.common.autofull.constant.Constant;
 import com.suke.zhjg.common.autofull.decode.DecodeMaskDataHandle;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -24,6 +26,9 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class AutoDecodeMaskParamResolver implements HandlerMethodArgumentResolver {
 
+    @Autowired
+    public ConfigProperties configProperties;
+
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
         return methodParameter.hasParameterAnnotation(AutoDecodeMask.class);
@@ -36,10 +41,10 @@ public class AutoDecodeMaskParamResolver implements HandlerMethodArgumentResolve
             try {
                 if(ArrayUtil.isNotEmpty(value)){
                     String temp = String.valueOf(value[0]);
-                    if(temp.contains(Constant.phone) && !temp.contains(Constant.flag)){
+                    if(temp.contains(Constant.phone) && !temp.contains(configProperties.getEncryptFlag())){
                         throw new RuntimeException("脱敏数据解密失败，缺少key");
                     }
-                    if(temp.contains(Constant.phone) && temp.contains(Constant.flag)){
+                    if(temp.contains(Constant.phone) && temp.contains(configProperties.getEncryptFlag())){
                         log.info("key:{},value:{}",key,temp);
                         temp = DecodeMaskDataHandle.decode(temp);
                     }

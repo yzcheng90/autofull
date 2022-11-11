@@ -6,6 +6,7 @@ import cn.hutool.crypto.SecureUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
+import com.suke.zhjg.common.autofull.constant.ConstantBeans;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.util.SQLTableUtil;
 import lombok.experimental.UtilityClass;
@@ -61,7 +62,7 @@ public class AutoFullRedisCache {
                 e.printStackTrace();
             }
         }
-        return SecureUtil.md5(sql + paramStr);
+        return ConstantBeans.cacheName + SecureUtil.md5(sql + paramStr);
     }
 
     public <T> List<T> getList(String ID,String sql, Object param,T t){

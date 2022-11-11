@@ -18,26 +18,8 @@
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
   <artifactId>autofull-spring-boot-starter</artifactId>
-  <version>1.3.1</version>
+  <version>1.3.2</version>
 </dependency>
-```
-
-### 配置
-```yaml
-#redis 配置
-spring:
-  redis:
-    cache:
-      host: 127.0.0.1:6379
-      password:
-#填充框架配置
-autofull:
-  show-log: false
-  max-level: 1
-#如果使用 @AutoFullOssUrl 要配置文件系统配置 
-oss:
-  previewUrl: http://192.168.0.212:9000
-  bucket-name: xxx
 ```
 
 ### 示例代码：
@@ -160,67 +142,11 @@ return R.ok().autoFullData(list);
 >
 > v1.3.1
 >- SqlSessionFactory 换成 JdbcTemplate 解决SqlSession 8小时后连接断开问题
-
-
-
-
-### 注解介绍：
-
-- AutoFullBean   ( 填充一个对象)
-  > ```java
-  > @AutoFullBean(table="sys_role", conditionField = "userId")
-  > public SysRole sysRole;
-  > ```
-
-- AutoFullBeanSQL  ( 填充一个对象 自定义sql)
-  > ```java
-  > @AutoFullListSQL(sql = " select * from sys_role where create_user_id = {userId}")
-  > public List<SysRole> sysRole;
-  > ```
-
-- AutoFullField  ( 填充一个字段 )
-  > ```java
-  > @AutoFullField(table="表名",conditionField = "条件字段",queryField = "sName")
-  > public String sName;
-  > ```
-
-- AutoFullFieldSQL  ( 填充一个字段 自定义sql)
-    >  ```java
-    >  @AutoFullFieldSQL(sql = "select name from xxxx where id = {id} ")
-    >  public String name;
-    > ```
-
-- AutoFullList  ( 填充一个List对象 ）
-    >  ```java
-    >  @AutoFullList(table = "表名",conditionField = "字段名")
-    >  public List<SysRole> roles;
-    >  ```
-
-- AutoFullListSQL  ( 填充一个List对象 自定义sql)
-    >  ```java
-    >  @AutoFullFieldSQL(sql = "select * from xxxx where id = {id} ")
-    >  public List<SysRole> roles;
-    >  ```
-
-- AutoFullJoin  （字段拼接）
-    >  ```java
-    >  @AutoFullJoin(value = "湖南省长沙市岳麓区{park}5栋{number}")
-    >  public String address;
-    >  ```
-
-- AutoFullOssUrl  ( 填充OSS预览地址)
-    >  ```java
-    >  @ApiModelProperty(value = "文件存储路径")
-    >  @JsonProperty(value = "sFileUrl")
-    >  @AutoFullOssUrl
-    >  public String sFileUrl;
-    >  ```
-    >
-  >比如数据库保存的是  2020/10/01/xxx.jpg
-  >
-  >返回给前台要完整路径，比如  http://192.168.0.212:9000/xxx/2020/10/01/xxx.jpg
-  >
-  >使用这个功能需要在yml中配置
+>
+> v1.3.2
+>- 优化重构部分代码
+>- 升级依赖hutool 5.8.8
+>- 升级依赖mybatis plus 3.5.5
 
 
 

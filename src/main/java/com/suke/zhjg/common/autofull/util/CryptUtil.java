@@ -1,7 +1,8 @@
 package com.suke.zhjg.common.autofull.util;
 
 import cn.hutool.core.codec.Base64;
-import com.suke.zhjg.common.autofull.constant.Constant;
+import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -18,7 +19,8 @@ public class CryptUtil {
 
     static {
         try {
-            b = new SecretKeySpec(Constant.keys.getBytes("UTF-8"),"AES");
+            ConfigProperties bean = ApplicationContextRegister.getApplicationContext().getBean(ConfigProperties.class);
+            b = new SecretKeySpec(bean.getEncryptKeys().getBytes("UTF-8"),"AES");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

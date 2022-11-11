@@ -2,9 +2,12 @@ package com.suke.zhjg.common.autofull.decode;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
 import com.suke.zhjg.common.autofull.constant.Constant;
+import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.util.CryptUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -26,70 +29,74 @@ import java.util.List;
 @UtilityClass
 public class DecodeMaskDataHandle {
 
-    public String decode(String decrypt){
+    public String decode(String decrypt) {
         return getValue(decrypt);
     }
 
     @SneakyThrows
-    public <T> T decode(T data){
+    public <T> T decode(T data) {
         Class<?> aClass = data.getClass();
-        for(Field field : aClass.getDeclaredFields()){
+        for (Field field : aClass.getDeclaredFields()) {
             Object value = field.get(data);
             field.setAccessible(true);
             String temp = String.valueOf(value);
-            if(temp.contains(Constant.phone) && temp.contains(Constant.flag)){
+            if (temp.contains(Constant.phone) && temp.contains(getConfigProperties().getEncryptFlag())) {
                 temp = DecodeMaskDataHandle.getValue(temp);
-                field.set(data,temp);
+                field.set(data, temp);
             }
         }
         return data;
     }
 
-    public <T> List<T> decode(List<T> list){
-        if(CollUtil.isNotEmpty(list)){
-            list.forEach(obj-> obj = decode(obj));
+    public <T> List<T> decode(List<T> list) {
+        if (CollUtil.isNotEmpty(list)) {
+            list.forEach(obj -> obj = decode(obj));
         }
         return list;
     }
 
-    public InputStream decode(InputStream in, ObjectMapper objectMapper,Type type){
-        String bodyStr = IoUtil.read(in,"UTF-8");
+    public InputStream decode(InputStream in, ObjectMapper objectMapper, Type type) {
+        String bodyStr = IoUtil.read(in, CharsetUtil.CHARSET_UTF_8);
         try {
-            if(bodyStr.contains(Constant.phone) && !bodyStr.contains(Constant.flag)){
+            if (bodyStr.contains(Constant.phone) && !bodyStr.contains(getConfigProperties().getEncryptFlag())) {
                 throw new RuntimeException("脱敏数据解密失败，缺少key");
             }
-            if(bodyStr.contains(Constant.phone) && bodyStr.contains(Constant.flag)){
+            if (bodyStr.contains(Constant.phone) && bodyStr.contains(getConfigProperties().getEncryptFlag())) {
                 Object object = objectMapper.readValue(bodyStr, Class.forName(type.getTypeName()));
                 Object decode = decode(object);
                 bodyStr = objectMapper.writeValueAsString(decode);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return IoUtil.toStream(bodyStr,"UTF-8");
+        return IoUtil.toStream(bodyStr, CharsetUtil.CHARSET_UTF_8);
     }
 
-    protected String getValue(String value){
-        if(StrUtil.isNotEmpty(value)){
-            if(value.contains(Constant.phone) && value.contains(Constant.flag)){
-                int index = value.indexOf(Constant.flag);
-                String warValue = value.substring(0,index);
-                String key = value.substring(index + Constant.flag.length());
-                if(StrUtil.isEmpty(key)){
+    protected String getValue(String value) {
+        if (StrUtil.isNotEmpty(value)) {
+            if (value.contains(Constant.phone) && value.contains(getConfigProperties().getEncryptFlag())) {
+                int index = value.indexOf(getConfigProperties().getEncryptFlag());
+                String warValue = value.substring(0, index);
+                String key = value.substring(index + getConfigProperties().getEncryptFlag().length());
+                if (StrUtil.isEmpty(key)) {
                     throw new RuntimeException("脱敏数据解密失败!key为空");
                 }
                 String decrypt = CryptUtil.decrypt(key);
                 StringBuilder stringBuilder = new StringBuilder(warValue);
                 int cryptIndex = value.indexOf(Constant.phone);
                 String body = stringBuilder.replace(cryptIndex, cryptIndex + decrypt.length(), decrypt).toString();
-                log.info("脱敏数据解密：{}",body);
+                log.info("脱敏数据解密：{}", body);
                 return body;
-            }else {
+            } else {
                 return value;
             }
-        }else {
+        } else {
             throw new RuntimeException("脱敏字段密文为空!");
         }
+    }
+
+    private ConfigProperties getConfigProperties() {
+        return ApplicationContextRegister.getApplicationContext().getBean(ConfigProperties.class);
     }
 
 }

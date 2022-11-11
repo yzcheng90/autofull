@@ -3,7 +3,6 @@ package com.suke.zhjg.common.autofull.handler;
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullOssUrl;
-import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.entity.OssEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,49 +21,36 @@ import java.lang.reflect.Field;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullOssUrl.class)
-public class AutoFullOssURLService implements Handler {
+public class AutoFullOssURLService extends DefaultHandler {
 
     @Autowired
     public OssEntity ossEntity;
 
-    @Autowired
-    public ConfigProperties configProperties;
-
     @Override
-    public String sql(String table, String queryField, String alias, String conditionField, String condition) {
-        return null;
-    }
-
-    @Override
-    public String sql(String sql, String conditionField) {
-        return null;
-    }
-
-    @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj,String sequence,int level) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level) {
         try {
-            if(annotation instanceof AutoFullOssUrl){
+            if (annotation instanceof AutoFullOssUrl) {
                 field.setAccessible(true);
                 String data = (String) field.get(obj);
-                if(StrUtil.isNotEmpty(data) && StrUtil.isNotBlank(data)){
+                if (StrUtil.isNotEmpty(data) && StrUtil.isNotBlank(data)) {
                     String previewUrl = ossEntity.getPreviewUrl();
                     String bucketName = ossEntity.getBucketName();
-                    if(data.contains(previewUrl)){
-                        field.set(obj,data);
+                    if (data.contains(previewUrl)) {
+                        field.set(obj, data);
                         return;
-                    }else {
-                        if(previewUrl != null && bucketName != null){
+                    } else {
+                        if (previewUrl != null && bucketName != null) {
                             String url = previewUrl + "/" + bucketName + "/" + data;
-                            if(configProperties.isShowLog()){
-                                log.info("ID:{}, LEVEL:{}, 填充地址:{}",sequence,level,url);
+                            if (configProperties.isShowLog()) {
+                                log.info("ID:{}, LEVEL:{}, 填充地址:{}", sequence, level, url);
                             }
-                            field.set(obj,url);
+                            field.set(obj, url);
                         }
                     }
                 }
             }
         } catch (IllegalAccessException e) {
-            log.error("填充MinioURL失败,{}",e);
+            log.error("填充MinioURL失败,{}", e);
             e.printStackTrace();
         }
     }

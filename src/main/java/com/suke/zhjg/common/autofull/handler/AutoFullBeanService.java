@@ -6,11 +6,9 @@ import com.suke.zhjg.common.autofull.annotation.AutoFullBean;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.constant.ConstantSQL;
-import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.sequence.AutoSequence;
 import com.suke.zhjg.common.autofull.sql.AutoFullSqlJdbcTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -31,20 +29,12 @@ import java.util.Map;
 @Slf4j
 @Component
 @AutoFullConfiguration(type = AutoFullBean.class)
-public class AutoFullBeanService implements Handler {
-
-    @Autowired
-    public ConfigProperties configProperties;
+public class AutoFullBeanService extends DefaultHandler {
 
     @Override
     public String sql(String table, String queryField, String alias, String conditionField, String condition) {
         String sql = ConstantSQL.SQL.SELECT + " * "+ ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ?";
         return sql;
-    }
-
-    @Override
-    public String sql(String sql, String conditionField) {
-        return null;
     }
 
     @Override
