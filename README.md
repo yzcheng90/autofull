@@ -24,31 +24,34 @@
 
 ### 示例代码：
 >
-> 实现功能：查询用户和角色
+> 实现功能：查询用户和菜单
 
 ##### SysUser    bean
 
 ```java
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class SysUser extends Model<SysUser> {
+@TableName("sys_user")
+public class SysUser {
 
   // 用户ID
   @TableId(value = "user_id", type = IdType.AUTO)
-  private Long userId;
-
-  ..........
-
-  // 当前用户所有角色
-  @TableField(exist = false)
-  @AutoFullListSQL(sql = " select * from sys_role where create_user_id = {userId}")
-  private List<SysRole> roleIdList;
-
+  public Long userId;
 
   // 当前用户所有菜单
   @TableField(exist = false)
   @AutoFullList(table = "sys_menu",conditionField = "userId")
-  private List<SysMenu> menuList;
+  public List<SysMenu> menuList;
+
+  @TableName("sys_user")
+  class SysMenu {
+     
+        @TableId(value = "menu_id", type = IdType.AUTO)
+        public Long menuId;
+        
+        public String menuName;
+
+        public Long userId;
+  }
 
 }
 ```
@@ -59,15 +62,14 @@ public class SysUser extends Model<SysUser> {
 
 ```java
 @RestController
-@AllArgsConstructor
 public class SysUserController {
     
-    private final SysUserService sysUserService;
+    @Autowired
+    public SysUserService sysUserService;
     
     @AutoFullData
     @RequestMapping("/list")
 	public Object list(@RequestParam Map<String, Object> params){
-       // 查询用户
        List<SysUser> list = sysUserService.list();
        return list;
     }
@@ -75,51 +77,24 @@ public class SysUserController {
 }
 ```
 
+**返回结果**
+
+> 访问 ：http://localhost:8080/list 
+
+```json
+{
+  "userId": 1,
+  "menuList": [{
+      "menuId": 1,
+      "menuName": "用户管理",
+      "userId": 1
+   }]
+}
+```
+
+
 ### 相关博客
 > CSDN《[自动填充系列](https://blog.csdn.net/qq_15273441/category_10912977.html)》 
-
-### 功能
-> v1.0.0
->- @AutoFullBean  自动填充Bean
->- @AutoFullBeanSQL  自动填充Bean自定义SQL
->- @AutoFullField  自动填充字段
->- @AutoFullFieldSQL  自动填充字段自定义SQL
->- @AutoFullList  自动填充List
->- @AutoFullListSQL  自动填充List自定义SQL
->- @AutoFullJoin  多字段拼接
->- @AutoFullOssUrl  自动拼接OSS预览地址
->
-> v1.1.0
-> - @AutoFullMask 数据脱敏 支持手机号和身份证 比如：138****8888
->
-> v1.2.0
->- @AutoFullBean
->- @AutoFullBeanSQL
->- @AutoFullList
->- @AutoFullListSQL
->- 以上四个注解新增参数 childLevel （是否支持查询子级）
->- 比如 用户表中有角色，角色表中还有权限，如果在用户表使用注解查询角色时 childLevel = true 那么查询用户的时候自动查询角色和权限
->
->- 新增日志打印开关
->
-> v1.2.1
->- 修复使用 @AutoFullField、@AutoFullFieldSQL 时类型转换错误
->- 修复使用 @AutoFullBean 时不是泛型获取不到类型错误
->
-> v1.3.0
->- 新增@AutoDecodeMask 参数自动解密注解
->- 新增redis 缓存,第一次填充数据就会缓存到redis,如果有对该表修改则删除该表缓存
->
-> v1.3.1
->- SqlSessionFactory 换成 JdbcTemplate 解决SqlSession 8小时后连接断开问题
->
-> v1.3.2
->- 优化重构部分代码
->- 升级依赖hutool 5.8.8
->- 升级依赖mybatis plus 3.5.5
->
-> v1.3.3
->- 新增@AutoFullData 使用aop填充
 
 
  **最后**
