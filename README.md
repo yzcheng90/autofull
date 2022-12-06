@@ -1,6 +1,12 @@
 # autofull-spring-boot-starter （自动填充属性框架）
 
-【autofull】 -- 为偷懒而生。
+![Image text](https://img.shields.io/badge/autofull-v1.3.3-green.svg)
+![Image text](https://img.shields.io/badge/Mybatis_plus-3.5.5-green.svg)
+![Image text](https://img.shields.io/badge/hutool-5.8.8-green.svg)
+
+[更新日志](https://github.com/yzcheng90/zhjg-common-autofull/tree/master/doc/update.md)
+
+【AutoFull】 -- 为偷懒而生。
 
 设计初衷，为了摆脱重复的劳动力和冗余代码，以极简的代码实现功能，易维护
 
@@ -14,7 +20,7 @@
 基于 springboot 和 mybatis plus
 
 ### 依赖
-```java
+```xml
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
   <artifactId>autofull-spring-boot-starter</artifactId>
@@ -26,37 +32,31 @@
 >
 > 实现功能：查询用户和菜单
 
-##### SysUser    bean
+##### Bean
 
 ```java
 @Data
 @TableName("sys_user")
 public class SysUser {
 
-  // 用户ID
   @TableId(value = "user_id", type = IdType.AUTO)
   public Long userId;
 
-  // 当前用户所有菜单
   @TableField(exist = false)
   @AutoFullList(table = "sys_menu",conditionField = "userId")
   public List<SysMenu> menuList;
 
-  @TableName("sys_user")
   class SysMenu {
      
-        @TableId(value = "menu_id", type = IdType.AUTO)
         public Long menuId;
-        
         public String menuName;
-
         public Long userId;
   }
 
 }
 ```
 
-> 注意：{userId}  这个userId 字段必须是 SysUser 这个bean 里面有的字段，否则查询不到
+> 注意：这个userId 字段必须是 SysUser 这个bean 里面有的字段，否则查询不到
 
 **controller**
 
