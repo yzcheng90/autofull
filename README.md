@@ -18,7 +18,7 @@
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
   <artifactId>autofull-spring-boot-starter</artifactId>
-  <version>1.3.2</version>
+  <version>1.3.3</version>
 </dependency>
 ```
 
@@ -64,46 +64,16 @@ public class SysUserController {
     
     private final SysUserService sysUserService;
     
+    @AutoFullData
     @RequestMapping("/list")
-	public R list(@RequestParam Map<String, Object> params){
+	public Object list(@RequestParam Map<String, Object> params){
        // 查询用户
        List<SysUser> list = sysUserService.list();
-       // 填充（这里去执行 bean 中配置的注解相关处理）
-       AutoFullHandler.full(list);
-       return R.ok().setData(list);
+       return list;
     }
     
 }
 ```
-
-> AutoFullHandler.full 这个方法可以封装到 R（返回类）里面 ，比如：
-
-```java
-public <T> R autoFullData(IPage<T> iPage){
-    AutoFullHandler.full(iPage);
-    super.put("data", iPage);
-    return this;
-}
-
-public <T> R autoFullData(List<T> list){
-    AutoFullHandler.full(list);
-    super.put("data", list);
-    return this;
-}
-
-public <T> R autoFullData(T entity){
-    AutoFullHandler.full(entity);
-    super.put("data", entity);
-    return this;
-}
-```
-
-> 然后
-
-```java
-return R.ok().autoFullData(list);
-```
-
 
 ### 相关博客
 > CSDN《[自动填充系列](https://blog.csdn.net/qq_15273441/category_10912977.html)》 
@@ -147,7 +117,9 @@ return R.ok().autoFullData(list);
 >- 优化重构部分代码
 >- 升级依赖hutool 5.8.8
 >- 升级依赖mybatis plus 3.5.5
-
+>
+> v1.3.3
+>- 新增@AutoFullData 使用aop填充
 
 
  **最后**
