@@ -1,5 +1,6 @@
 package com.suke.zhjg.common.autofull;
 
+import com.suke.zhjg.common.autofull.aop.AutoFullAspect;
 import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
 import com.suke.zhjg.common.autofull.config.AutoConfig;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
@@ -32,6 +33,11 @@ public class AutoFullConfiguration {
     @Bean
     public SqlInterceptor sqlInterceptor(){
         return new SqlInterceptor();
+    }
+
+    @Bean
+    public AutoFullAspect autoFullAspect(){
+        return new AutoFullAspect();
     }
 
     @Bean

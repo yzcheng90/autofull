@@ -32,12 +32,12 @@ public class ConfigProperties {
     // 加密分隔标志
     @Setter
     @Getter
-    public String encryptFlag = "@suke@";
+    public String encryptFlag = "@autofull@";
 
     // 加密密钥  16位
     @Setter
     @Getter
-    public String encryptKeys = "suke172839456000";
+    public String encryptKeys = "abcdefg123456789";
 
 
 }
