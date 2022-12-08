@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+    url: jdbc:mysql://192.168.0.133:3306/autofull?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*Mapper.xml
+  global-config:
+    banner: false
+    db-config:
+      id-type: 0
+      field-strategy: 1
+      table-underline: false
+  configuration:
+    map-underscore-to-camel-case: true
+
+# autofull 配置
+autofull:
+  showLog: true
+  maxLevel: 1
+  currLevel: 0
+  encryptFlag: "@autofull@"
+  encryptKeys: "abcdefg123456789"

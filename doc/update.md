@@ -1,5 +1,10 @@
 ### 功能
 >
+> v1.3.5
+>- 修复填充的条件字段未使用驼锋规范而找不到字段的问题
+>- 数据脱敏使用hutool工具类，类型支持 CHINESE_NAME,ID_CARD,FIXED_PHONE,MOBILE_PHONE,ADDRESS,EMAIL,PASSWORD,CAR_LICENSE,BANK_CARD
+>
+>
 > v1.3.4
 >- 新增R类 返回对象封装
 >
