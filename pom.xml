@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.suke.autofull</groupId>
-    <artifactId>zhjg-common-autofull</artifactId>
+    <artifactId>autofull</artifactId>
     <version>1.0.0</version>
-    <name>zhjg-common-autofull</name>
+    <name>autofull</name>
     <description>自动填充框架</description>
     <packaging>pom</packaging>
     <properties>
