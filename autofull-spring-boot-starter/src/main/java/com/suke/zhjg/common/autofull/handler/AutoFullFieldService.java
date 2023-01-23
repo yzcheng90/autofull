@@ -29,8 +29,9 @@ public class AutoFullFieldService extends DefaultHandler {
 
     @Override
     public String sql(String table, String queryField, String alias, String conditionField) {
+        alias = getConditionField(alias);
+        queryField = getConditionField(queryField);
         String field = StrUtil.isBlank(queryField) ? alias : queryField + " " + ConstantSQL.SQL.AS + " " + alias;
-        field = getConditionField(field);
         conditionField = getConditionField(conditionField);
         String sql = ConstantSQL.SQL.SELECT + " " + field + " " + ConstantSQL.SQL.FROM + " " + table + " " + ConstantSQL.SQL.WHERE + " " + conditionField + "  =  ?";
         return sql;
