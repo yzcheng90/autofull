@@ -19,7 +19,7 @@ import java.io.Serializable;
 public class TbMenu implements Serializable {
 
     @TableId(type = IdType.AUTO)
-    public int menuId;
+    public Long menuId;
 
     public String menuName;
 }

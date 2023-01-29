@@ -5,6 +5,7 @@ import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -46,7 +47,18 @@ public class AutoFullSqlJdbcTemplate {
     public <T> List<T> queryList(String sql, RowMapper<T> resultType, Object... params){
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
         if(ArrayUtil.isNotEmpty(params)){
-            return jdbcTemplate.query(sql,resultType,params);
+            String name = ((BeanPropertyRowMapper) resultType).getMappedClass().getName();
+            if(name != null){
+                if(name.equals("java.lang.Integer")){
+                    return (List<T>) jdbcTemplate.queryForList(sql,Integer.class,params);
+                }else if (name.equals("java.lang.Long")){
+                    return (List<T>) jdbcTemplate.queryForList(sql,Long.class,params);
+                }else {
+                    return jdbcTemplate.query(sql,resultType,params);
+                }
+            }else {
+                return jdbcTemplate.query(sql,resultType,params);
+            }
         }else {
             return jdbcTemplate.query(sql,resultType);
         }

@@ -24,7 +24,7 @@ import java.util.List;
 public class TbUser implements Serializable {
 
     @TableId(type = IdType.AUTO)
-    public int userId;
+    public Long userId;
 
     @AutoFullMask(type = MaskType.CHINESE_NAME)
     public String userName;
@@ -73,4 +73,8 @@ public class TbUser implements Serializable {
     @TableField(exist = false)
     @AutoFullListSQL(sql = "select * from tb_menu where user_id = {userId}")
     public List<TbMenu> menuListSql;
+
+    @TableField(exist = false)
+    @AutoFullListSQL(sql = "select menu_Id as menuIds from tb_menu where user_id = {userId}")
+    public List<Integer> menuIds;
 }

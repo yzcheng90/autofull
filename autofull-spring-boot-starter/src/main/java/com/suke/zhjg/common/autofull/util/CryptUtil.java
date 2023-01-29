@@ -3,6 +3,7 @@ package com.suke.zhjg.common.autofull.util;
 import cn.hutool.core.codec.Base64;
 import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -12,7 +13,7 @@ import java.security.Key;
 /**
  * Created by czx on 2017/3/13.
  */
-
+@Slf4j
 public class CryptUtil {
     private static final CryptUtil a = new CryptUtil();
     private static Key b;
@@ -43,7 +44,8 @@ public class CryptUtil {
             cipher.init(Cipher.ENCRYPT_MODE, key);
             encrypt = cipher.doFinal(str.getBytes("UTF-8"));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            log.error("encrypt error :{}",e.getMessage());
         }
         return Base64.encode(encrypt);
     }
@@ -56,7 +58,8 @@ public class CryptUtil {
             cipher.init(Cipher.DECRYPT_MODE, key);
             decrypt = cipher.doFinal(Base64.decode(str));
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            log.error("decrypt error :{}",e.getMessage());
         }
         return new String(decrypt).trim();
     }
