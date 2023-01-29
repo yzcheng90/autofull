@@ -1,5 +1,12 @@
 ### 功能
 >
+>v1.3.7
+>- 修复long，integer的反序列化转换错误
+>
+>
+>v1.3.6
+>- 修复转驼峰bug
+>
 > v1.3.5
 >- 修复填充的条件字段未使用驼锋规范而找不到字段的问题
 >- 数据脱敏使用hutool工具类，类型支持 CHINESE_NAME,ID_CARD,FIXED_PHONE,MOBILE_PHONE,ADDRESS,EMAIL,PASSWORD,CAR_LICENSE,BANK_CARD
