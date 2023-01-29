@@ -1,6 +1,6 @@
 # autofull-spring-boot-starter （自动填充属性框架）
 
-![Image text](https://img.shields.io/badge/autofull-v1.3.5-green.svg)
+![Image text](https://img.shields.io/badge/autofull-v1.3.7-green.svg)
 ![Image text](https://img.shields.io/badge/Mybatis_plus-3.5.5-green.svg)
 ![Image text](https://img.shields.io/badge/hutool-5.8.8-green.svg)
 
@@ -24,9 +24,12 @@
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
   <artifactId>autofull-spring-boot-starter</artifactId>
-  <version>1.3.5</version>
+  <version>1.3.7</version>
 </dependency>
 ```
+
+### Example
+[《autofull-spring-boot-starter-example》](https://github.com/yzcheng90/autofull/tree/master/autofull-spring-boot-starter-example)
 
 ### 示例代码：
 >
