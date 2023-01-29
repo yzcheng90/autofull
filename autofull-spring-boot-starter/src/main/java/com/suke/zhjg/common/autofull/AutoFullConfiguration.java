@@ -76,6 +76,11 @@ public class AutoFullConfiguration {
     }
 
     @Bean
+    public AutoFullEmptyService autoFullEmptyService() {
+        return new AutoFullEmptyService();
+    }
+
+    @Bean
     public AutoFullBeanService autoFullBeanService() {
         return new AutoFullBeanService();
     }

@@ -1,5 +1,8 @@
 ### 功能
 >
+>v1.3.8
+>- 新增@AutoFullEmpty 填充字段为null值
+>
 >v1.3.7
 >- 修复long，integer的反序列化转换错误
 >

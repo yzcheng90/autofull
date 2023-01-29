@@ -48,6 +48,7 @@ public class TbUser implements Serializable {
     @AutoFullJoin(value = "我在中国。长沙，我叫{userName}")
     public String address;
 
+    @AutoFullEmpty
     public Date createTime;
 
     @TableField(exist = false)
