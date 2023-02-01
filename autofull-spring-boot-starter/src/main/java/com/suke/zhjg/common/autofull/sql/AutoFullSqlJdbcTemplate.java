@@ -49,10 +49,14 @@ public class AutoFullSqlJdbcTemplate {
         if(ArrayUtil.isNotEmpty(params)){
             String name = ((BeanPropertyRowMapper) resultType).getMappedClass().getName();
             if(name != null){
-                if(name.equals("java.lang.Integer")){
-                    return (List<T>) jdbcTemplate.queryForList(sql,Integer.class,params);
-                }else if (name.equals("java.lang.Long")){
-                    return (List<T>) jdbcTemplate.queryForList(sql,Long.class,params);
+                if(name.contains("java.lang")){
+                    Class<?> aClass = null;
+                    try {
+                        aClass = Class.forName(name);
+                    } catch (ClassNotFoundException e) {
+                        log.error("Class.forName Error : {}",e.getMessage());
+                    }
+                    return (List<T>) jdbcTemplate.queryForList(sql,aClass,params);
                 }else {
                     return jdbcTemplate.query(sql,resultType,params);
                 }

@@ -1,5 +1,8 @@
 ### 功能
 >
+>v1.3.9
+>- 修改jdbcTemplate.queryForList 查询的时候如果是基础类型使用 Class.forName
+>
 >v1.3.8
 >- 新增@AutoFullEmpty 填充字段为null值
 >
