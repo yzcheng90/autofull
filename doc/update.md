@@ -1,5 +1,9 @@
 ### 功能
 >
+>v1.4.0
+>- 修改，所有缓存key加入统一前缀
+>- 新增删除所有缓存方法
+>
 >v1.3.9
 >- 修改jdbcTemplate.queryForList 查询的时候如果是基础类型使用 Class.forName
 >
