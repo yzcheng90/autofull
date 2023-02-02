@@ -34,28 +34,28 @@ public class AutoFullRedisCache {
     // 有效期（7天）
     private static final int expireTime = 7 * 24 * 60;
 
-    private RedisTemplate getRedisTemplate(){
-        RedisTemplate<String,Object> redisTemplate = (RedisTemplate<String, Object>) ApplicationContextRegister.getApplicationContext().getBean("redisTemplate");
+    private RedisTemplate getRedisTemplate() {
+        RedisTemplate<String, Object> redisTemplate = (RedisTemplate<String, Object>) ApplicationContextRegister.getApplicationContext().getBean("redisTemplate");
         return redisTemplate;
     }
 
-    public StringRedisTemplate getStringRedisTemplate(){
+    public StringRedisTemplate getStringRedisTemplate() {
         StringRedisTemplate stringRedisTemplate = (StringRedisTemplate) ApplicationContextRegister.getApplicationContext().getBean("stringRedisTemplate");
         return stringRedisTemplate;
     }
 
-    public ConfigProperties getConfigProperties(){
+    public ConfigProperties getConfigProperties() {
         return ApplicationContextRegister.getApplicationContext().getBean(ConfigProperties.class);
     }
 
-    private ObjectMapper getObjectMapper(){
+    private ObjectMapper getObjectMapper() {
         ObjectMapper objectMapper = ApplicationContextRegister.getApplicationContext().getBean(ObjectMapper.class);
         return objectMapper;
     }
 
-    private String getKey(String sql,Object param){
+    private String getKey(String sql, Object param) {
         String paramStr = "";
-        if(ObjectUtil.isNotNull(param)){
+        if (ObjectUtil.isNotNull(param)) {
             try {
                 paramStr = getObjectMapper().writeValueAsString(param);
             } catch (JsonProcessingException e) {
@@ -65,32 +65,32 @@ public class AutoFullRedisCache {
         return ConstantBeans.cacheName + SecureUtil.md5(sql + paramStr);
     }
 
-    public <T> List<T> getList(String ID,String sql, Object param,T t){
+    public <T> List<T> getList(String ID, String sql, Object param, T t) {
         String key = getKey(sql, param);
         Object data = getRedisTemplate().opsForValue().get(key);
-        if(ObjectUtil.isNotNull(data)){
-            if(getConfigProperties().isShowLog()){
-                log.info("ID:{},取缓存数据,key:{}",ID,key);
+        if (ObjectUtil.isNotNull(data)) {
+            if (getConfigProperties().isShowLog()) {
+                log.info("ID:{},取缓存数据,key:{}", ID, key);
             }
             return (List<T>) data;
         }
         return null;
     }
 
-    public String getStringData(String ID,String sql, Object param){
+    public String getStringData(String ID, String sql, Object param) {
         String key = getKey(sql, param);
         Object data = getRedisTemplate().opsForValue().get(key);
-        if(ObjectUtil.isNotNull(data)){
-            if(getConfigProperties().isShowLog()){
-                log.info("ID:{},取缓存数据,key:{}",ID,key);
+        if (ObjectUtil.isNotNull(data)) {
+            if (getConfigProperties().isShowLog()) {
+                log.info("ID:{},取缓存数据,key:{}", ID, key);
             }
             return (String) data;
         }
         return null;
     }
 
-    public void setData(String ID,String sql,Object param,Object data){
-        if(ObjectUtil.isNull(data)){
+    public void setData(String ID, String sql, Object param, Object data) {
+        if (ObjectUtil.isNull(data)) {
             return;
         }
         List<String> tableName = SQLTableUtil.getSelectTableName(sql);
@@ -98,42 +98,53 @@ public class AutoFullRedisCache {
         RedisTemplate redisTemplate = getRedisTemplate();
         ValueOperations valueOperations = redisTemplate.opsForValue();
         // 保存 每个表 + key
-        tableName.forEach(name ->{
-            String tableKey = name + key;
-            if(getConfigProperties().isShowLog()){
-                log.info("ID:{},保存缓存key：{}",ID,tableKey);
+        tableName.forEach(name -> {
+            String tableKey = ConstantBeans.cacheName + name + key;
+            if (getConfigProperties().isShowLog()) {
+                log.info("ID:{},保存缓存key：{}", ID, tableKey);
             }
-            valueOperations.set(tableKey,key,expireTime, TimeUnit.MINUTES);
+            valueOperations.set(tableKey, key, expireTime, TimeUnit.MINUTES);
         });
         // 保存 key 和数据
-        valueOperations.set(key,data,expireTime, TimeUnit.MINUTES);
-        if(getConfigProperties().isShowLog()){
-            log.info("ID:{},保存缓存key：{}",ID,key);
+        valueOperations.set(key, data, expireTime, TimeUnit.MINUTES);
+        if (getConfigProperties().isShowLog()) {
+            log.info("ID:{},保存缓存key：{}", ID, key);
         }
     }
 
-    public void deleteData(String ID,String tableName){
+    public void deleteData(String ID, String tableName) {
         RedisTemplate redisTemplate = getRedisTemplate();
         StringRedisTemplate stringRedisTemplate = getStringRedisTemplate();
         Set<String> keys = stringRedisTemplate.keys("*" + tableName + "*");
-        if(CollUtil.isNotEmpty(keys)){
+        if (CollUtil.isNotEmpty(keys)) {
             List<String> list = keys.stream().collect(Collectors.toList());
             // 删除所有的key
             list.forEach(key -> {
                 Object keyData = redisTemplate.opsForValue().get(key);
-                if(ObjectUtil.isNotNull(keyData)){
+                if (ObjectUtil.isNotNull(keyData)) {
                     // 删除 key 对应的数据
                     redisTemplate.delete(keyData);
-                    if(getConfigProperties().isShowLog()){
-                        log.info("ID:{},删除缓存keyData：{}",ID,keyData);
+                    if (getConfigProperties().isShowLog()) {
+                        log.info("ID:{},删除缓存keyData：{}", ID, keyData);
                     }
                 }
                 stringRedisTemplate.delete(key);
-                if(getConfigProperties().isShowLog()){
-                    log.info("ID:{},删除缓存keyData：{}",ID,key);
+                if (getConfigProperties().isShowLog()) {
+                    log.info("ID:{},删除缓存keyData：{}", ID, key);
                 }
             });
         }
+    }
+
+    public void deleteAll() {
+        StringRedisTemplate stringRedisTemplate = getStringRedisTemplate();
+        Set<String> keys = stringRedisTemplate.keys(ConstantBeans.cacheName + "*");
+        keys.forEach(key ->{
+            if (getConfigProperties().isShowLog()) {
+                log.info("删除缓存数据,key:{}", key);
+            }
+            stringRedisTemplate.delete(key);
+        });
     }
 
 }

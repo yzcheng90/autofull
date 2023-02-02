@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.suke.autofull.example.entity.TbUser;
 import com.suke.autofull.example.service.TbUserService;
 import com.suke.zhjg.common.autofull.annotation.AutoFullData;
+import com.suke.zhjg.common.autofull.cache.AutoFullRedisCache;
 import com.suke.zhjg.common.autofull.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,6 +59,11 @@ public class TbUserController {
         QueryWrapper<TbUser> queryWrapper = new QueryWrapper<>();
         IPage<TbUser> pageList = tbUserService.page(page, queryWrapper);
         return pageList;
+    }
+
+    @GetMapping(value = "/deleteCacheAll")
+    public void deleteCacheAll(){
+        AutoFullRedisCache.deleteAll();
     }
 
 }
