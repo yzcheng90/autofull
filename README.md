@@ -1,6 +1,6 @@
 # autofull-spring-boot-starter （自动填充属性框架）
 
-![Image text](https://img.shields.io/badge/autofull-v1.4.0green.svg)
+![Image text](https://img.shields.io/badge/autofull-v1.4.0-green.svg)
 ![Image text](https://img.shields.io/badge/Mybatis_plus-3.5.5-green.svg)
 ![Image text](https://img.shields.io/badge/hutool-5.8.8-green.svg)
 
