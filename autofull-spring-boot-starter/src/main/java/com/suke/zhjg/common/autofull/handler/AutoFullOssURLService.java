@@ -45,6 +45,12 @@ public class AutoFullOssURLService extends DefaultHandler {
                                 log.info("ID:{}, LEVEL:{}, 填充地址:{}", sequence, level, url);
                             }
                             field.set(obj, url);
+                        }else if (previewUrl != null) {
+                            String url = previewUrl + "/" + data;
+                            if (configProperties.isShowLog()) {
+                                log.info("ID:{}, LEVEL:{}, 填充地址:{}", sequence, level, url);
+                            }
+                            field.set(obj, url);
                         }
                     }
                 }
