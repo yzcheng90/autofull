@@ -1,8 +1,8 @@
 # autofull-spring-boot-starter （自动填充属性框架）
 
-![Image text](https://img.shields.io/badge/autofull-v1.4.0-green.svg)
+![Image text](https://img.shields.io/badge/autofull-v1.4.1-green.svg)
 ![Image text](https://img.shields.io/badge/Mybatis_plus-3.5.5-green.svg)
-![Image text](https://img.shields.io/badge/hutool-5.8.8-green.svg)
+![Image text](https://img.shields.io/badge/hutool-5.8.12-green.svg)
 
 [更新日志](https://github.com/yzcheng90/zhjg-common-autofull/tree/master/doc/update.md)
 
@@ -24,7 +24,7 @@
 <dependency>
   <groupId>com.github.yzcheng90</groupId>
   <artifactId>autofull-spring-boot-starter</artifactId>
-  <version>1.4.0</version>
+  <version>1.4.1</version>
 </dependency>
 ```
 
