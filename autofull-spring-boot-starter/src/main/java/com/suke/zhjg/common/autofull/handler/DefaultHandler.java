@@ -121,16 +121,21 @@ public abstract class DefaultHandler implements Handler {
     }
 
     public String getConditionField(String field) {
-        MybatisPlusProperties bean = ApplicationContextRegister.getApplicationContext().getBean(MybatisPlusProperties.class);
-        MybatisConfiguration configuration = bean.getConfiguration();
-        if (configuration == null || configuration.isMapUnderscoreToCamelCase()) {
-            if (field.contains("_")) {
-                return FieldCaseUtil.toCamelCase(field);
+        boolean fieldRule = configProperties.isFieldRule();
+        if (fieldRule) {
+            MybatisPlusProperties bean = ApplicationContextRegister.getApplicationContext().getBean(MybatisPlusProperties.class);
+            MybatisConfiguration configuration = bean.getConfiguration();
+            if (configuration == null || configuration.isMapUnderscoreToCamelCase()) {
+                if (field.contains("_")) {
+                    return FieldCaseUtil.toCamelCase(field);
+                } else {
+                    return FieldCaseUtil.toUnderScoreCase(field);
+                }
             } else {
                 return FieldCaseUtil.toUnderScoreCase(field);
             }
-        }else {
-            return FieldCaseUtil.toUnderScoreCase(field);
+        } else {
+            return field;
         }
     }
 

@@ -1,5 +1,16 @@
 ### 功能
 >
+>v1.4.2
+>- 新增字段规则配置
+```yaml
+# autofull 配置
+autofull:
+  # 字段规则
+  #  true ：默认使用驼峰 支持通过mybatis-plus.configuration.map-underscore-to-camel-case 配置
+  #  false ：自定义 实体类中写的是什么就是什么不会自动转换
+  fieldRule: true
+```
+>
 >v1.4.1
 >- 新增使用@AutoFullOssUrl时bucketName 可以不用
 >
