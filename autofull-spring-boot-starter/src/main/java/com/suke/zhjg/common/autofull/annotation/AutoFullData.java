@@ -21,4 +21,9 @@ public @interface AutoFullData {
      * 默认 0 只查询当前对象一级
      **/
     int maxLevel() default 0;
+
+    /**
+     * 本次填充是否使用缓存
+     **/
+    boolean enableCache() default true;
 }

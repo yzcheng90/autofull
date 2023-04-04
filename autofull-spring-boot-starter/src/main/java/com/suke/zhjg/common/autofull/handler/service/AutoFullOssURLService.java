@@ -1,9 +1,10 @@
-package com.suke.zhjg.common.autofull.handler;
+package com.suke.zhjg.common.autofull.handler.service;
 
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullOssUrl;
 import com.suke.zhjg.common.autofull.entity.OssEntity;
+import com.suke.zhjg.common.autofull.handler.DefaultHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class AutoFullOssURLService extends DefaultHandler {
     public OssEntity ossEntity;
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level) {
+    public void result(Annotation annotation, Field field, Object obj) {
         try {
             if (annotation instanceof AutoFullOssUrl) {
                 field.setAccessible(true);
@@ -42,13 +43,13 @@ public class AutoFullOssURLService extends DefaultHandler {
                         if (previewUrl != null && bucketName != null) {
                             String url = previewUrl + "/" + bucketName + "/" + data;
                             if (configProperties.isShowLog()) {
-                                log.info("ID:{}, LEVEL:{}, 填充地址:{}", sequence, level, url);
+                                log.info("填充地址:{}", url);
                             }
                             field.set(obj, url);
-                        }else if (previewUrl != null) {
+                        } else if (previewUrl != null) {
                             String url = previewUrl + "/" + data;
                             if (configProperties.isShowLog()) {
-                                log.info("ID:{}, LEVEL:{}, 填充地址:{}", sequence, level, url);
+                                log.info("填充地址:{}", url);
                             }
                             field.set(obj, url);
                         }

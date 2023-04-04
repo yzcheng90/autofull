@@ -78,4 +78,8 @@ public class TbUser implements Serializable {
     @TableField(exist = false)
     @AutoFullListSQL(sql = "select menu_Id as menuIds from tb_menu where user_id = {userId}")
     public List<Integer> menuIds;
+
+    @TableField(exist = false)
+    @AutoFullListSQL(sql = "select menu_Id as menuLongIds from tb_menu where user_id = {userId}")
+    public List<Long> menuLongIds;
 }

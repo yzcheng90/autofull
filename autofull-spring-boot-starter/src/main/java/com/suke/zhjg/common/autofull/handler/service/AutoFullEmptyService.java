@@ -1,9 +1,9 @@
-package com.suke.zhjg.common.autofull.handler;
+package com.suke.zhjg.common.autofull.handler.service;
 
-import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullEmpty;
 import com.suke.zhjg.common.autofull.constant.FullEmpty;
+import com.suke.zhjg.common.autofull.handler.DefaultHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,12 @@ import java.lang.reflect.Field;
 public class AutoFullEmptyService extends DefaultHandler {
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level, boolean enableCache) {
+        this.result(annotation, field, obj);
+    }
+
+    @Override
+    public void result(Annotation annotation, Field field, Object obj) {
         try {
             if (annotation instanceof AutoFullEmpty) {
                 AutoFullEmpty fieldAnnotation = field.getAnnotation(AutoFullEmpty.class);
@@ -31,9 +36,9 @@ public class AutoFullEmptyService extends DefaultHandler {
                     field.setAccessible(true);
                     FullEmpty type = fieldAnnotation.type();
                     String value = type == FullEmpty.EMPTY ? null : "";
-                    if(field.getType() == String.class){
+                    if (field.getType() == String.class) {
                         field.set(obj, value);
-                    }else {
+                    } else {
                         field.set(obj, null);
                     }
                 }

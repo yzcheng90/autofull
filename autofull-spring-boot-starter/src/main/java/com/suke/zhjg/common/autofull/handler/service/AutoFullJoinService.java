@@ -1,7 +1,8 @@
-package com.suke.zhjg.common.autofull.handler;
+package com.suke.zhjg.common.autofull.handler.service;
 
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullJoin;
+import com.suke.zhjg.common.autofull.handler.DefaultHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,12 @@ public class AutoFullJoinService extends DefaultHandler {
     public final String pattern = "(?!\\{)([^\\{\\}]+)(?=\\})";
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level) {
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level, boolean enableCache) {
+        this.result(annotation, fields, field, obj);
+    }
+
+    @Override
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj) {
         try {
             if (annotation instanceof AutoFullJoin) {
                 AutoFullJoin fieldAnnotation = field.getAnnotation(AutoFullJoin.class);

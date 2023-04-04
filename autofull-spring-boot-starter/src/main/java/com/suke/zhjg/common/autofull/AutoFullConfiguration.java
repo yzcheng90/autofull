@@ -5,7 +5,7 @@ import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
 import com.suke.zhjg.common.autofull.config.AutoConfig;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
 import com.suke.zhjg.common.autofull.entity.OssEntity;
-import com.suke.zhjg.common.autofull.handler.*;
+import com.suke.zhjg.common.autofull.handler.service.*;
 import com.suke.zhjg.common.autofull.interceptor.SqlInterceptor;
 import com.suke.zhjg.common.autofull.sequence.AutoSequence;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

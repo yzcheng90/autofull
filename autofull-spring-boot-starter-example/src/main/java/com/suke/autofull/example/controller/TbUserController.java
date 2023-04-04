@@ -27,7 +27,7 @@ public class TbUserController {
     @Autowired
     public TbUserService tbUserService;
 
-    @AutoFullData
+    @AutoFullData(enableCache = false)
     @GetMapping(value = "/getTest")
     public R getTest() {
         QueryWrapper<TbUser> queryWrapper = new QueryWrapper<>();

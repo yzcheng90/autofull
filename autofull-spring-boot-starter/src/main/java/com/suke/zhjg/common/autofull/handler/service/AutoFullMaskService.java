@@ -1,9 +1,10 @@
-package com.suke.zhjg.common.autofull.handler;
+package com.suke.zhjg.common.autofull.handler.service;
 
 import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoFullConfiguration;
 import com.suke.zhjg.common.autofull.annotation.AutoFullMask;
+import com.suke.zhjg.common.autofull.handler.DefaultHandler;
 import com.suke.zhjg.common.autofull.util.CryptUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ import java.lang.reflect.Field;
 public class AutoFullMaskService extends DefaultHandler {
 
     @Override
-    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level) {
+    public void result(Annotation annotation, Field field, Object obj) {
         try {
             if (annotation instanceof AutoFullMask) {
                 field.setAccessible(true);
@@ -37,7 +38,7 @@ public class AutoFullMaskService extends DefaultHandler {
                             cutValue = DesensitizedUtil.chineseName(data);
                             break;
                         case ID_CARD:
-                            cutValue = DesensitizedUtil.idCardNum(data,1,2);
+                            cutValue = DesensitizedUtil.idCardNum(data, 1, 2);
                             break;
                         case FIXED_PHONE:
                             cutValue = DesensitizedUtil.fixedPhone(data);
@@ -46,7 +47,7 @@ public class AutoFullMaskService extends DefaultHandler {
                             cutValue = DesensitizedUtil.mobilePhone(data);
                             break;
                         case ADDRESS:
-                            cutValue = DesensitizedUtil.address(data,8);
+                            cutValue = DesensitizedUtil.address(data, 8);
                             break;
                         case EMAIL:
                             cutValue = DesensitizedUtil.email(data);
@@ -63,7 +64,7 @@ public class AutoFullMaskService extends DefaultHandler {
                     }
                     String encrypt = CryptUtil.encrypt(data);
                     if (configProperties.isShowLog()) {
-                        log.info("ID:{}, LEVEL:{}, 脱敏数据加密：{} 密钥：{}", sequence, level, cutValue, encrypt);
+                        log.info("脱敏数据加密：{} 密钥：{}", cutValue, encrypt);
                     }
                     field.set(obj, cutValue + configProperties.getEncryptFlag() + encrypt);
                 }

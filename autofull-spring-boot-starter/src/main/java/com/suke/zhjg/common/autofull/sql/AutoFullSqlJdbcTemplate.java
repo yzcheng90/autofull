@@ -33,12 +33,14 @@ public class AutoFullSqlJdbcTemplate {
             try {
                 return jdbcTemplate.queryForObject(sql, resultType, params);
             }catch (EmptyResultDataAccessException e){
+                log.error("queryForObject:{}",e.getMessage());
                 return null;
             }
         }else {
             try {
                 return jdbcTemplate.queryForObject(sql,resultType);
             }catch (EmptyResultDataAccessException e){
+                log.error("queryForObject:{}",e.getMessage());
                 return null;
             }
         }
