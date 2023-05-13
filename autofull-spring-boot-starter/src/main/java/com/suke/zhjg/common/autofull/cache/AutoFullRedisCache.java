@@ -84,7 +84,7 @@ public class AutoFullRedisCache {
             if (getConfigProperties().isShowLog()) {
                 log.info("ID:{},取缓存数据,key:{}", ID, key);
             }
-            return (String) data;
+            return String.valueOf(data);
         }
         return null;
     }
