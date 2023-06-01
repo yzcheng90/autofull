@@ -25,6 +25,11 @@ import java.lang.reflect.Field;
 public class AutoFullMaskService extends DefaultHandler {
 
     @Override
+    public void result(Annotation annotation, Field[] fields, Field field, Object obj, String sequence, int level, boolean enableCache) {
+        this.result(annotation,field,obj);
+    }
+
+    @Override
     public void result(Annotation annotation, Field field, Object obj) {
         try {
             if (annotation instanceof AutoFullMask) {

@@ -2,6 +2,7 @@ package com.suke.zhjg.common.autofull.resolver;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import com.suke.zhjg.common.autofull.annotation.AutoDecodeMask;
 import com.suke.zhjg.common.autofull.constant.Constant;
 import com.suke.zhjg.common.autofull.decode.DecodeMaskDataHandle;
@@ -48,7 +49,9 @@ public class AutoDecodeMaskParamResolver implements HandlerMethodArgumentResolve
                         log.info("key:{},value:{}",key,temp);
                         temp = DecodeMaskDataHandle.decode(temp);
                     }
-                    BeanUtil.setProperty(obj, key, temp);
+                    if(StrUtil.isNotEmpty(temp)){
+                        BeanUtil.setProperty(obj, key, temp);
+                    }
                 }
             } catch (Exception e) {
                 log.error("脱敏数据解密失败:", e);

@@ -61,6 +61,9 @@ public class CryptUtil {
             //e.printStackTrace();
             log.error("decrypt error :{}",e.getMessage());
         }
+        if(decrypt == null){
+            return null;
+        }
         return new String(decrypt).trim();
     }
 
