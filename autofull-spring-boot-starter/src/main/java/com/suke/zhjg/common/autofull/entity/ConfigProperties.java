@@ -58,5 +58,11 @@ public class ConfigProperties {
     @Getter
     public String encryptKeys = "abcdefg123456789";
 
+    /**
+     * 缓存前缀
+     */
+    @Setter
+    @Getter
+    public String cachePrefix = "";
 
 }

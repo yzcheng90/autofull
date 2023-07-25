@@ -62,7 +62,8 @@ public class AutoFullRedisCache {
                 e.printStackTrace();
             }
         }
-        return ConstantBeans.cacheName + SecureUtil.md5(sql + paramStr);
+        String cachePrefix = getConfigProperties().getCachePrefix();
+        return cachePrefix + ConstantBeans.cacheName + SecureUtil.md5(sql + paramStr);
     }
 
     public <T> List<T> getList(String ID, String sql, Object param, T t) {
@@ -93,13 +94,14 @@ public class AutoFullRedisCache {
         if (ObjectUtil.isNull(data)) {
             return;
         }
+        String cachePrefix = getConfigProperties().getCachePrefix();
         List<String> tableName = SQLTableUtil.getSelectTableName(sql);
         String key = getKey(sql, param);
         RedisTemplate redisTemplate = getRedisTemplate();
         ValueOperations valueOperations = redisTemplate.opsForValue();
         // 保存 每个表 + key
         tableName.forEach(name -> {
-            String tableKey = ConstantBeans.cacheName + name + key;
+            String tableKey = cachePrefix + ConstantBeans.cacheName + name + key;
             if (getConfigProperties().isShowLog()) {
                 log.info("ID:{},保存缓存key：{}", ID, tableKey);
             }
@@ -138,8 +140,9 @@ public class AutoFullRedisCache {
 
     public void deleteAll() {
         StringRedisTemplate stringRedisTemplate = getStringRedisTemplate();
-        Set<String> keys = stringRedisTemplate.keys(ConstantBeans.cacheName + "*");
-        keys.forEach(key ->{
+        String cachePrefix = getConfigProperties().getCachePrefix();
+        Set<String> keys = stringRedisTemplate.keys(cachePrefix + ConstantBeans.cacheName + "*");
+        keys.forEach(key -> {
             if (getConfigProperties().isShowLog()) {
                 log.info("删除缓存数据,key:{}", key);
             }

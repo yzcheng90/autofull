@@ -1,5 +1,14 @@
 ### 功能
 >
+> v1.5.3
+> - 新增parallelStream处理填充数据
+> - 新增配置 cachePrefix 用于区分是哪个项目的
+```yaml
+# autofull 配置
+autofull:
+  cachePrefix: "example_"
+```
+> 
 > v1.5.2
 > - 修复脱敏类型未生效的问题
 > 

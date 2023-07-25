@@ -33,7 +33,7 @@ public class AutoFullHandler {
      **/
     public <T> IPage<T> full(IPage<T> iPage) {
         if (CollUtil.isNotEmpty(iPage.getRecords())) {
-            iPage.getRecords().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, null, DEFAULT_LEVEL, true)));
+            iPage.getRecords().parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, null, DEFAULT_LEVEL, true)));
         }
         return iPage;
     }
@@ -45,7 +45,7 @@ public class AutoFullHandler {
      **/
     public <T> IPage<T> full(IPage<T> iPage, boolean enableCache) {
         if (CollUtil.isNotEmpty(iPage.getRecords())) {
-            iPage.getRecords().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, null, DEFAULT_LEVEL, enableCache)));
+            iPage.getRecords().parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, null, DEFAULT_LEVEL, enableCache)));
         }
         return iPage;
     }
@@ -56,7 +56,7 @@ public class AutoFullHandler {
      **/
     public <T> IPage<T> full(IPage<T> iPage, String sequence) {
         if (CollUtil.isNotEmpty(iPage.getRecords())) {
-            iPage.getRecords().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, DEFAULT_LEVEL, true)));
+            iPage.getRecords().parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, DEFAULT_LEVEL, true)));
         }
         return iPage;
     }
@@ -69,7 +69,7 @@ public class AutoFullHandler {
      **/
     public <T> IPage<T> full(IPage<T> iPage, String sequence, boolean enableCache) {
         if (CollUtil.isNotEmpty(iPage.getRecords())) {
-            iPage.getRecords().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, DEFAULT_LEVEL, enableCache)));
+            iPage.getRecords().parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, DEFAULT_LEVEL, enableCache)));
         }
         return iPage;
     }
@@ -82,7 +82,7 @@ public class AutoFullHandler {
      **/
     public <T> IPage<T> full(IPage<T> iPage, String sequence, int level) {
         if (CollUtil.isNotEmpty(iPage.getRecords())) {
-            iPage.getRecords().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, level, true)));
+            iPage.getRecords().parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, level, true)));
         }
         return iPage;
     }
@@ -96,7 +96,7 @@ public class AutoFullHandler {
      **/
     public <T> IPage<T> full(IPage<T> iPage, String sequence, int level, boolean enableCache) {
         if (CollUtil.isNotEmpty(iPage.getRecords())) {
-            iPage.getRecords().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, level, enableCache)));
+            iPage.getRecords().parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, level, enableCache)));
         }
         return iPage;
     }
@@ -106,7 +106,7 @@ public class AutoFullHandler {
      **/
     public <T> List<T> full(List<T> list) {
         if (CollUtil.isNotEmpty(list)) {
-            list.forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, null, DEFAULT_LEVEL, true)));
+            list.parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, null, DEFAULT_LEVEL, true)));
         }
         return list;
     }
@@ -118,7 +118,7 @@ public class AutoFullHandler {
      **/
     public <T> List<T> full(List<T> list, boolean enableCache) {
         if (CollUtil.isNotEmpty(list)) {
-            list.forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, null, DEFAULT_LEVEL, enableCache)));
+            list.parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, null, DEFAULT_LEVEL, enableCache)));
         }
         return list;
     }
@@ -130,7 +130,7 @@ public class AutoFullHandler {
      **/
     public <T> List<T> full(List<T> list, String sequence) {
         if (CollUtil.isNotEmpty(list)) {
-            list.forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, DEFAULT_LEVEL, true)));
+            list.parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, DEFAULT_LEVEL, true)));
         }
         return list;
     }
@@ -143,7 +143,7 @@ public class AutoFullHandler {
      **/
     public <T> List<T> full(List<T> list, String sequence, boolean enableCache) {
         if (CollUtil.isNotEmpty(list)) {
-            list.forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, DEFAULT_LEVEL, enableCache)));
+            list.parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, DEFAULT_LEVEL, enableCache)));
         }
         return list;
     }
@@ -156,7 +156,7 @@ public class AutoFullHandler {
      **/
     public <T> List<T> full(List<T> list, String sequence, int level) {
         if (CollUtil.isNotEmpty(list)) {
-            list.forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, level, true)));
+            list.parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, level, true)));
         }
         return list;
     }
@@ -170,7 +170,7 @@ public class AutoFullHandler {
      **/
     public <T> List<T> full(List<T> list, String sequence, int level, boolean enableCache) {
         if (CollUtil.isNotEmpty(list)) {
-            list.forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, level, enableCache)));
+            list.parallelStream().forEach(obj -> BeanUtil.copyProperties(obj, handler(obj, sequence, level, enableCache)));
         }
         return list;
     }

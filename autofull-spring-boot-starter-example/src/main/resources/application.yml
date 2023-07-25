@@ -7,7 +7,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
-    url: jdbc:mysql://192.168.0.133:3306/autofull?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+    url: jdbc:mysql://localhost:3306/autofull?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*Mapper.xml
@@ -27,3 +27,4 @@ autofull:
   currLevel: 0
   encryptFlag: "@autofull@"
   encryptKeys: "abcdefg123456789"
+  cachePrefix: "example_"
