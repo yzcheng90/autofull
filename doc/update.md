@@ -1,5 +1,8 @@
 ### 功能
 >
+> v1.5.4
+> 开放自定义删除缓存key的接口和RedisTemplate自定义配置
+> 
 > v1.5.3
 > - 新增parallelStream处理填充数据
 > - 新增配置 cachePrefix 用于区分是哪个项目的

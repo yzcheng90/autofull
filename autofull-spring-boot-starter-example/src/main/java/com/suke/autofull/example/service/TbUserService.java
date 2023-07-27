@@ -5,4 +5,6 @@ import com.suke.autofull.example.entity.TbUser;
 
 
 public interface TbUserService extends IService<TbUser> {
+
+    void updateMenu(String menuName);
 }

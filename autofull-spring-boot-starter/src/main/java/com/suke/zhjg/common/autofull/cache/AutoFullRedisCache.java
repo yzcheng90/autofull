@@ -34,7 +34,7 @@ public class AutoFullRedisCache {
     // 有效期（7天）
     private static final int expireTime = 7 * 24 * 60;
 
-    private RedisTemplate getRedisTemplate() {
+    private RedisTemplate<String, Object> getRedisTemplate() {
         RedisTemplate<String, Object> redisTemplate = (RedisTemplate<String, Object>) ApplicationContextRegister.getApplicationContext().getBean("redisTemplate");
         return redisTemplate;
     }
@@ -51,6 +51,11 @@ public class AutoFullRedisCache {
     private ObjectMapper getObjectMapper() {
         ObjectMapper objectMapper = ApplicationContextRegister.getApplicationContext().getBean(ObjectMapper.class);
         return objectMapper;
+    }
+
+    private AutoFullCacheDelete getAutoFullCacheDelete() {
+        AutoFullCacheDelete cacheDelete = ApplicationContextRegister.getApplicationContext().getBean(AutoFullCacheDelete.class);
+        return cacheDelete;
     }
 
     private String getKey(String sql, Object param) {
@@ -97,8 +102,8 @@ public class AutoFullRedisCache {
         String cachePrefix = getConfigProperties().getCachePrefix();
         List<String> tableName = SQLTableUtil.getSelectTableName(sql);
         String key = getKey(sql, param);
-        RedisTemplate redisTemplate = getRedisTemplate();
-        ValueOperations valueOperations = redisTemplate.opsForValue();
+        RedisTemplate<String, Object> redisTemplate = getRedisTemplate();
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
         // 保存 每个表 + key
         tableName.forEach(name -> {
             String tableKey = cachePrefix + ConstantBeans.cacheName + name + key;
@@ -115,9 +120,12 @@ public class AutoFullRedisCache {
     }
 
     public void deleteData(String ID, String tableName) {
-        RedisTemplate redisTemplate = getRedisTemplate();
+        RedisTemplate<String, Object> redisTemplate = getRedisTemplate();
         StringRedisTemplate stringRedisTemplate = getStringRedisTemplate();
-        Set<String> keys = stringRedisTemplate.keys("*" + tableName + "*");
+        AutoFullCacheDelete autoFullCacheDelete = getAutoFullCacheDelete();
+        String cachePrefix = getConfigProperties().getCachePrefix();
+        tableName = cachePrefix + ConstantBeans.cacheName + tableName + "??";
+        Set<String> keys = autoFullCacheDelete.getDeleteKeys(redisTemplate, tableName);
         if (CollUtil.isNotEmpty(keys)) {
             List<String> list = keys.stream().collect(Collectors.toList());
             // 删除所有的key
@@ -125,7 +133,7 @@ public class AutoFullRedisCache {
                 Object keyData = redisTemplate.opsForValue().get(key);
                 if (ObjectUtil.isNotNull(keyData)) {
                     // 删除 key 对应的数据
-                    redisTemplate.delete(keyData);
+                    redisTemplate.delete(keyData.toString());
                     if (getConfigProperties().isShowLog()) {
                         log.info("ID:{},删除缓存keyData：{}", ID, keyData);
                     }

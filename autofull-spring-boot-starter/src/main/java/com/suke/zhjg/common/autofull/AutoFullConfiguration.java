@@ -1,6 +1,8 @@
 package com.suke.zhjg.common.autofull;
 
 import com.suke.zhjg.common.autofull.aop.AutoFullAspect;
+import com.suke.zhjg.common.autofull.cache.AutoFullCacheDelete;
+import com.suke.zhjg.common.autofull.cache.DefaultCacheDeleteHandler;
 import com.suke.zhjg.common.autofull.config.ApplicationContextRegister;
 import com.suke.zhjg.common.autofull.config.AutoConfig;
 import com.suke.zhjg.common.autofull.entity.ConfigProperties;
@@ -23,6 +25,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties({OssEntity.class, ConfigProperties.class})
 public class AutoFullConfiguration {
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AutoFullCacheDelete autoFullCacheDelete() {
+        return new DefaultCacheDeleteHandler();
+    }
 
     @Bean
     public AutoSequence autoSequence() {

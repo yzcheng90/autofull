@@ -61,6 +61,11 @@ public class TbUserController {
         return pageList;
     }
 
+    @GetMapping(value = "/update")
+    public void update(){
+        tbUserService.updateMenu("111111111111");
+    }
+
     @GetMapping(value = "/deleteCacheAll")
     public void deleteCacheAll(){
         AutoFullRedisCache.deleteAll();
