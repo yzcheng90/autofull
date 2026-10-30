@@ -102,6 +102,4 @@ public class SysUserController {
 
  **最后**
 
-- 交流QQ群：17470566
-- 本人QQ：913624256
 - 如果喜欢，记得star fork 谢谢您的关注 本项目会持续维护
